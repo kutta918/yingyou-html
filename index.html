@@ -1,0 +1,2782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>智能云桥 · 天气 + 多彩主题 + 游戏 + 音乐</title>
+    <style>
+        :root {
+            --bg: #f0f2f8;
+            --bg-alt: #e6e9f2;
+            --card: #ffffff;
+            --card-hover: #fafbfe;
+            --text: #1a1d2e;
+            --text2: #6b6f82;
+            --text3: #9498aa;
+            --border: #e4e6f0;
+            --border-light: #f1f3f9;
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.08);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.10);
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --accent-dark: #5a4bd1;
+            --accent-glow: rgba(108, 92, 231, 0.2);
+            --accent2: #00b894;
+            --accent2-glow: rgba(0, 184, 148, 0.2);
+            --danger: #e17055;
+            --warn: #fdcb6e;
+            --warn-light: #fffef5;
+            --success: #00b894;
+            --success-light: #f0fdf9;
+            --radius-xs: 6px;
+            --radius-sm: 10px;
+            --radius: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 26px;
+            --radius-full: 9999px;
+            --nav-height: 70px;
+            --topbar-height: 54px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Inter', system-ui, -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif;
+            --font-mono: 'SF Mono', 'JetBrains Mono', 'Consolas', monospace;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-blur: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        body.dark {
+            --bg: #0f1119;
+            --bg-alt: #161925;
+            --card: #1a1d2e;
+            --card-hover: #1f2236;
+            --text: #e2e4f0;
+            --text2: #a8abbd;
+            --text3: #70738a;
+            --border: #262a3d;
+            --border-light: #1f2236;
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.35);
+            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.45);
+            --accent-glow: rgba(108, 92, 231, 0.35);
+            --glass-bg: rgba(26, 29, 46, 0.78);
+            --glass-border: rgba(255, 255, 255, 0.06);
+        }
+        body.eye-care-active {
+            --bg: #faf6ee;
+            --bg-alt: #f3ece0;
+            --card: #fffdf8;
+            --text: #3d3022;
+            --text2: #7a6b52;
+            --text3: #9a8b72;
+            --border: #e8dcc8;
+            --border-light: #f2e9d8;
+            --glass-bg: rgba(255, 253, 248, 0.75);
+            --glass-border: rgba(232, 220, 200, 0.6);
+            --accent: #8b7355;
+            --accent-light: #b8977e;
+            --accent-dark: #6d5a3f;
+            --accent-glow: rgba(139, 115, 85, 0.22);
+        }
+        body[data-color-theme="blue"] {
+            --accent: #3b82f6;
+            --accent-light: #93c5fd;
+            --accent-dark: #1d4ed8;
+            --accent-glow: rgba(59, 130, 246, 0.25);
+        }
+        body[data-color-theme="green"] {
+            --accent: #10b981;
+            --accent-light: #6ee7b7;
+            --accent-dark: #047857;
+            --accent-glow: rgba(16, 185, 129, 0.25);
+        }
+        body[data-color-theme="pink"] {
+            --accent: #ec4899;
+            --accent-light: #f9a8d4;
+            --accent-dark: #be185d;
+            --accent-glow: rgba(236, 72, 153, 0.25);
+        }
+        body[data-color-theme="orange"] {
+            --accent: #f97316;
+            --accent-light: #fdba74;
+            --accent-dark: #c2410c;
+            --accent-glow: rgba(249, 115, 22, 0.25);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html {
+            height: 100%;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            height: -webkit-fill-available;
+            overflow: hidden;
+            transition: background var(--transition), color var(--transition);
+            -webkit-font-smoothing: antialiased;
+        }
+        .app-container {
+            height: 100vh;
+            height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            gap: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 50;
+            min-height: var(--topbar-height);
+            flex-shrink: 0;
+        }
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .topbar-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            color: #fff;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+        .topbar-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text);
+        }
+        .topbar-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .topbar-btn {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-xs);
+            user-select: none;
+        }
+        .topbar-btn:active {
+            transform: scale(0.9);
+            background: var(--bg-alt);
+        }
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 14px 12px calc(var(--nav-height) + var(--safe-bottom) + 14px);
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+        .tab-page {
+            display: none;
+            animation: fadeSlideIn 0.38s ease;
+        }
+        .tab-page.active {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .hero-banner {
+            background: linear-gradient(145deg, var(--accent) 0%, var(--accent-light) 40%, #dfe6e9 100%);
+            border-radius: var(--radius-xl);
+            padding: 20px 18px;
+            color: #fff;
+            margin-bottom: 14px;
+            box-shadow: 0 12px 36px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+            min-height: 130px;
+        }
+        body.dark .hero-banner {
+            background: linear-gradient(145deg, var(--accent-dark) 0%, var(--accent) 40%, #2d3048 100%);
+        }
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -30px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .hero-banner h2 {
+            font-size: 18px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-time-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+        .hero-time {
+            font-size: 34px;
+            font-weight: 200;
+            letter-spacing: 3px;
+            font-family: var(--font-mono);
+        }
+        .weather-widget {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 5px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        .weather-widget:active {
+            transform: scale(0.94);
+            background: rgba(255, 255, 255, 0.35);
+        }
+        .weather-icon {
+            font-size: 20px;
+        }
+        .hero-sub {
+            font-size: 10px;
+            opacity: 0.85;
+            margin-top: 6px;
+            position: relative;
+            z-index: 1;
+        }
+        .card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 16px 14px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1.5px solid var(--border-light);
+            transition: all var(--transition);
+        }
+        .card-header {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+        }
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border-light);
+            gap: 10px;
+        }
+        .card-row:last-child {
+            border-bottom: none;
+        }
+        .card-row .label {
+            color: var(--text2);
+            font-size: 11px;
+        }
+        .card-row .value {
+            font-weight: 600;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--accent);
+            text-align: right;
+            max-width: 55%;
+            word-break: break-all;
+        }
+        .func-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        @media (max-width: 380px) {
+            .func-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            .hero-time {
+                font-size: 26px;
+            }
+        }
+        .func-btn {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px 6px;
+            text-align: center;
+            cursor: pointer;
+            border: 1.5px solid var(--border-light);
+            box-shadow: var(--shadow-xs);
+            transition: all var(--transition-fast);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            user-select: none;
+        }
+        .func-btn:active {
+            transform: scale(0.9);
+            background: var(--bg-alt);
+            border-color: var(--accent-light);
+        }
+        .func-btn .f-icon {
+            font-size: 26px;
+        }
+        .func-btn .f-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .notice-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 8px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+            border-bottom: 1px solid var(--border-light);
+            gap: 9px;
+        }
+        .notice-row:last-child {
+            border-bottom: none;
+        }
+        .notice-row:active {
+            background: var(--bg-alt);
+            transform: scale(0.97);
+        }
+        .notice-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+        .notice-title {
+            flex: 1;
+            font-size: 12px;
+            color: var(--text);
+            font-weight: 500;
+        }
+        .notice-time {
+            font-size: 10px;
+            color: var(--text3);
+            flex-shrink: 0;
+        }
+        .festival-banner {
+            background: linear-gradient(135deg, #fef9e7, #fef3c7);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            text-align: center;
+            margin-bottom: 12px;
+            border-left: 4px solid #f59e0b;
+            box-shadow: var(--shadow-xs);
+        }
+        body.dark .festival-banner {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.06));
+        }
+        .festival-banner h3 {
+            font-size: 16px;
+            color: #92400e;
+            font-weight: 700;
+        }
+        body.dark .festival-banner h3 {
+            color: #fbbf24;
+        }
+        .festival-banner p {
+            font-size: 11px;
+            color: #a16207;
+        }
+        .video-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+        .video-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-alt);
+            border-radius: var(--radius);
+            padding: 10px 13px;
+            cursor: pointer;
+            border: 1.5px solid var(--border);
+            transition: all var(--transition-fast);
+            flex: 1;
+            min-width: 0;
+            user-select: none;
+        }
+        .video-picker:active {
+            background: var(--border);
+            border-color: var(--accent);
+        }
+        .video-picker-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .video-picker-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .video-picker-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text);
+        }
+        .video-picker-desc {
+            font-size: 10px;
+            color: var(--text3);
+        }
+        .video-toggle {
+            width: 50px;
+            height: 28px;
+            border-radius: 14px;
+            background: #d1d5db;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+            transition: all var(--transition-fast);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            user-select: none;
+        }
+        body.dark .video-toggle {
+            background: #3a3d4a;
+        }
+        .video-toggle.on {
+            background: var(--accent);
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+        .video-toggle-knob {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: left var(--transition-fast);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        .video-toggle.on .video-toggle-knob {
+            left: 24px;
+        }
+        .video-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 6px;
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            z-index: 160;
+            display: none;
+            max-height: 50vh;
+            overflow-y: auto;
+            border: 1.5px solid var(--border);
+        }
+        .video-dropdown.show {
+            display: block;
+            animation: dropdownIn 0.22s ease;
+        }
+        @keyframes dropdownIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .video-drop-item {
+            padding: 12px 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 12px;
+            user-select: none;
+        }
+        .video-drop-item:active {
+            background: var(--bg-alt);
+        }
+        .video-drop-item.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .video-cat {
+            padding: 9px 14px 3px;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            position: sticky;
+            top: 0;
+            background: var(--card);
+            z-index: 1;
+        }
+        .video-tag {
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+            background: var(--warn-light);
+            color: #92400e;
+            margin-left: auto;
+            font-weight: 600;
+        }
+        .video-tag.off {
+            background: var(--bg-alt);
+            color: var(--text3);
+        }
+        .video-tag.recommend {
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 700;
+        }
+        .game-category {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 600;
+            margin-left: 8px;
+            background: #fef3c7;
+            color: #92400e;
+        }
+        body.dark .game-category {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+        .alarm-snackbar {
+            position: fixed;
+            bottom: calc(var(--nav-height) + var(--safe-bottom) + 14px);
+            left: 14px;
+            right: 14px;
+            background: #1e2030;
+            color: #fff;
+            border-radius: var(--radius-full);
+            padding: 13px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10000;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+            gap: 10px;
+        }
+        .alarm-snackbar.hide {
+            display: none;
+        }
+        .alarm-snackbar .snack-btn {
+            background: #ef4444;
+            border: none;
+            color: #fff;
+            padding: 9px 16px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 11px;
+        }
+        .countdown-hl {
+            color: #f59e0b;
+            font-weight: 700;
+            animation: pulse 1.4s infinite;
+        }
+        .ringing-hl {
+            color: #ef4444;
+            font-weight: 700;
+            animation: blink 0.5s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.45;
+            }
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.15;
+            }
+        }
+        .security-hero {
+            background: linear-gradient(135deg, var(--accent2) 0%, #00cec9 60%, #81ecec 100%);
+            border-radius: var(--radius-xl);
+            padding: 20px 16px;
+            color: #fff;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .security-hero .shield-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+        .security-list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-bottom: 4px;
+            background: var(--card);
+            user-select: none;
+        }
+        .security-list-item:active {
+            background: var(--bg-alt);
+            transform: scale(0.97);
+        }
+        .s-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .s-icon.blue {
+            background: #eef2ff;
+            color: #5b6af0;
+        }
+        .s-icon.green {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+        .s-icon.orange {
+            background: #fff7ed;
+            color: #f97316;
+        }
+        .s-icon.purple {
+            background: #faf5ff;
+            color: #8b5cf6;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(var(--nav-height) + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            background: var(--glass-bg);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            display: flex;
+            border-top: 1px solid var(--glass-border);
+            z-index: 99;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text3);
+            font-size: 9px;
+            font-weight: 600;
+            gap: 3px;
+            transition: all var(--transition-fast);
+            user-select: none;
+        }
+        .nav-item.active {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .nav-item .nav-icon {
+            font-size: 20px;
+        }
+        .nav-item.active .nav-icon {
+            transform: translateY(-3px);
+            filter: drop-shadow(0 4px 6px var(--accent-glow));
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 10px 18px;
+            border-radius: var(--radius-full);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all var(--transition-fast);
+            user-select: none;
+        }
+        .btn:active {
+            transform: scale(0.93);
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            width: 100%;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+        .btn-outline {
+            background: var(--card);
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            width: 100%;
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            width: 100%;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 10px;
+        }
+        .mode-chip {
+            padding: 7px 14px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid var(--border);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--card);
+            color: var(--text);
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            user-select: none;
+        }
+        .mode-chip.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+        .mode-chip.auto-chip {
+            background: linear-gradient(135deg, #e8f4f8, #dbeafe);
+            border-color: #93c5fd;
+            color: #1e40af;
+            font-weight: 700;
+        }
+        body.dark .mode-chip.auto-chip {
+            background: linear-gradient(135deg, #1e293b, #1e3a5f);
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 0;
+            user-select: none;
+            font-size: 13px;
+        }
+        .toggle-track {
+            width: 50px;
+            height: 28px;
+            border-radius: 14px;
+            background: #d1d5db;
+            position: relative;
+            transition: all var(--transition-fast);
+            flex-shrink: 0;
+        }
+        body.dark .toggle-track {
+            background: #3a3d4a;
+        }
+        .toggle-track.on {
+            background: #f59e0b;
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.32);
+        }
+        .toggle-knob {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: left var(--transition-fast);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+        }
+        .toggle-track.on .toggle-knob {
+            left: 24px;
+        }
+        .color-theme-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .color-theme-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-xs);
+        }
+        .color-theme-dot.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            transform: scale(1.1);
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-box {
+            background: var(--card);
+            border-radius: var(--radius-xl);
+            padding: 22px 18px;
+            width: 100%;
+            max-width: 420px;
+            max-height: 78vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            border: 1.5px solid var(--border-light);
+            animation: modalIn 0.32s ease;
+        }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal-close {
+            float: right;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text3);
+            padding: 8px;
+            border: none;
+            background: transparent;
+        }
+        .modal-box h3 {
+            margin-bottom: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid var(--border);
+            background: var(--bg-alt);
+            color: var(--text);
+            font-size: 12px;
+            margin: 5px 0;
+            outline: none;
+            font-family: var(--font);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .modal-box textarea {
+            border-radius: var(--radius);
+            resize: vertical;
+            min-height: 90px;
+        }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            text-align: center;
+            font-size: 11px;
+        }
+        .cal-cell {
+            padding: 8px 3px;
+            border-radius: var(--radius-xs);
+            font-weight: 500;
+        }
+        .cal-cell.today {
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 4px 14px var(--accent-glow);
+            border-radius: var(--radius-sm);
+        }
+        .cal-header-cell {
+            font-weight: 700;
+            color: var(--text3);
+            font-size: 10px;
+            padding: 6px 3px;
+        }
+        .text-xs {
+            font-size: 10px;
+        }
+        .text-muted {
+            color: var(--text3);
+        }
+        .mt-2 {
+            margin-top: 7px;
+        }
+        .mb-2 {
+            margin-bottom: 7px;
+        }
+        .gap-2 {
+            gap: 7px;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .translate-indicator {
+            position: fixed;
+            top: 56px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #fff;
+            padding: 6px 15px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 9997;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.35s;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+        .translate-indicator.visible {
+            opacity: 1;
+        }
+        .weather-detail-tooltip {
+            position: fixed;
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 14px 18px;
+            box-shadow: var(--shadow-xl);
+            z-index: 9998;
+            font-size: 12px;
+            border: 1.5px solid var(--border);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s;
+            max-width: 260px;
+            text-align: center;
+        }
+        .weather-detail-tooltip.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="translate-indicator" id="translateIndicator">🌐 AI翻译中...</div>
+    <div class="weather-detail-tooltip" id="weatherTooltip"></div>
+    <div class="app-container" id="appContainer">
+        <div class="topbar">
+            <div class="topbar-brand">
+                <div class="topbar-logo">☁️</div>
+                <span class="topbar-title" data-i18n="appName">智能云桥</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="topbar-btn" id="themeBtn" title="切换主题">🌓</button>
+            </div>
+        </div>
+        <div class="main-content" id="mainContent">
+            <div class="tab-page active" data-tab="home">
+                <div class="hero-banner">
+                    <h2 data-i18n="welcome">👋 欢迎回来</h2>
+                    <div class="hero-time-row">
+                        <div class="hero-time" id="currentTime">--:--:--</div>
+                        <div class="weather-widget" id="weatherWidget" title="点击查看天气详情">
+                            <span class="weather-icon" id="weatherIcon">🌤️</span>
+                            <span id="weatherTemp">--°</span>
+                            <span id="weatherCity" style="font-size:10px;opacity:0.8;">定位中...</span>
+                        </div>
+                    </div>
+                    <div class="hero-sub"><span data-i18n="useDays">已陪伴</span>：<span id="useDays">1天</span> · <span id="todayFestivalShort">--</span></div>
+                </div>
+                <div class="festival-banner" id="festivalBox" style="display:none;">
+                    <h3 id="festivalTitle">✨</h3>
+                    <p id="festivalWish"></p>
+                </div>
+                <div class="func-grid">
+                    <div class="func-btn" data-action="info"><span class="f-icon">📋</span><span class="f-label" data-i18n="devInfo">设备信息</span></div>
+                    <div class="func-btn" data-action="eyecare"><span class="f-icon">🌙</span><span class="f-label" data-i18n="eyeCare">护眼模式</span></div>
+                    <div class="func-btn" data-action="clear"><span class="f-icon">🗑️</span><span class="f-label" data-i18n="clearCache">清除缓存</span></div>
+                    <div class="func-btn" data-action="log"><span class="f-icon">📄</span><span class="f-label" data-i18n="viewLog">查看日志</span></div>
+                    <div class="func-btn" data-action="about"><span class="f-icon">ℹ️</span><span class="f-label" data-i18n="about">关于系统</span></div>
+                    <div class="func-btn" data-action="calendar"><span class="f-icon">📅</span><span class="f-label" data-i18n="calendar">日历</span></div>
+                    <div class="func-btn" data-action="alarm"><span class="f-icon">⏰</span><span class="f-label" data-i18n="alarm">闹钟</span></div>
+                    <div class="func-btn" data-action="videoTab"><span class="f-icon">🎬</span><span class="f-label" data-i18n="videoNav">影娱</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">📢 <span data-i18n="notices">系统公告</span></div>
+                    <div id="noticeList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">📊 <span data-i18n="stats">使用统计</span></div>
+                    <div class="card-row"><span class="label" data-i18n="onlineTime">本次在线时长</span><span class="value" id="onlineTime">00:00:00</span></div>
+                    <div class="card-row"><span class="label" data-i18n="visitCount">累计访问次数</span><span class="value" id="visitCount">1</span></div>
+                    <div class="card-row"><span class="label" data-i18n="currentLang">当前语言</span><span class="value" id="nowLang">简体中文</span></div>
+                </div>
+            </div>
+            <div class="tab-page" data-tab="video">
+                <div class="card" style="background:var(--warn-light);border-left:4px solid #f59e0b;">
+                    <p style="font-size:11px;color:#92400e;margin:0;" data-i18n="videoNotice">点击选择平台，再点右侧开关打开。</p>
+                </div>
+                <div class="card" style="position:relative;">
+                    <div class="card-header">🎬 <span data-i18n="selectPlatform">选择影娱平台</span></div>
+                    <div class="video-picker-row">
+                        <div class="video-picker" id="videoPicker">
+                            <div class="video-picker-icon" id="currentVideoIcon">🎬</div>
+                            <div class="video-picker-info">
+                                <div class="video-picker-name" id="currentVideoName">影视线路①</div>
+                                <div class="video-picker-desc" id="currentVideoDesc">影视线路一（主推）</div>
+                            </div>
+                            <span style="color:var(--text3);">▼</span>
+                        </div>
+                        <div class="video-toggle" id="videoToggle"><div class="video-toggle-knob"></div></div>
+                    </div>
+                    <div class="video-dropdown" id="videoDropdown"></div>
+                </div>
+                <div class="card" style="background:var(--success-light);border-left:4px solid #10b981;">
+                    <p style="font-size:11px;color:#065f46;margin:0;font-weight:500;line-height:1.4;" data-i18n="musicNotice">
+                        🎵 音乐区公告：如果当前播放线路无法使用，请尝试切换到其他线路。
+                    </p>
+                </div>
+                <div class="card" style="position:relative;">
+                    <div class="card-header">🎵 <span data-i18n="selectMusic">选择音乐平台</span></div>
+                    <div class="video-picker-row">
+                        <div class="video-picker" id="musicPicker">
+                            <div class="video-picker-icon" id="currentMusicIcon">🎧</div>
+                            <div class="video-picker-info">
+                                <div class="video-picker-name" id="currentMusicName">音乐线路①</div>
+                                <div class="video-picker-desc" id="currentMusicDesc">线路一：免费在线听歌</div>
+                            </div>
+                            <span style="color:var(--text3);font-size:11px;flex-shrink:0;">▼</span>
+                        </div>
+                        <div class="video-toggle" id="musicToggle"><div class="video-toggle-knob"></div></div>
+                    </div>
+                    <div class="video-dropdown" id="musicDropdown"></div>
+                </div>
+            </div>
+            <div class="tab-page" data-tab="game">
+                <div class="card" style="background:var(--warn-light);border-left:4px solid #f59e0b;">
+                    <p style="font-size:11px;color:#92400e;margin:0;" data-i18n="gameNotice">🎮 选择游戏平台，点右侧开关直接打开。云游戏需要网络连接。</p>
+                </div>
+                <div class="card" style="position:relative;">
+                    <div class="card-header">🎮 <span data-i18n="selectGame">选择游戏平台</span></div>
+                    <div class="video-picker-row">
+                        <div class="video-picker" id="gamePicker">
+                            <div class="video-picker-icon" id="currentGameIcon">🎮</div>
+                            <div class="video-picker-info">
+                                <div class="video-picker-name" id="currentGameName">原神</div>
+                                <div class="video-picker-desc" id="currentGameDesc">云·原神</div>
+                            </div>
+                            <span style="color:var(--text3);">▼</span>
+                        </div>
+                        <div class="video-toggle" id="gameToggle"><div class="video-toggle-knob"></div></div>
+                    </div>
+                    <div class="video-dropdown" id="gameDropdown"></div>
+                </div>
+            </div>
+            <div class="tab-page" data-tab="tool">
+                <div class="card" id="alarmPanel">
+                    <div class="card-header">⏰ <span data-i18n="alarmSettings">闹钟设置</span></div>
+                    <div class="flex-wrap gap-2 mb-2">
+                        <select id="ringtoneSelect" style="flex:2;min-width:110px;padding:9px 11px;border-radius:24px;border:1.5px solid var(--border);background:var(--bg-alt);color:var(--text);font-size:12px;"></select>
+                        <button class="btn btn-sm btn-outline" id="previewRingBtn">🔊 预览</button>
+                        <button class="btn btn-sm btn-outline" id="stopRingBtn" style="color:#ef4444;">⏹ 停止</button>
+                    </div>
+                    <input type="time" id="alarmTime" style="width:100%;padding:10px 14px;border-radius:24px;border:1.5px solid var(--border);background:var(--bg-alt);color:var(--text);font-size:13px;margin:5px 0;">
+                    <button class="btn btn-primary" id="setAlarmBtn">⏰ <span data-i18n="setAlarm">设定闹钟</span></button>
+                    <p id="alarmStatus" style="margin-top:9px;font-size:11px;color:var(--text2);min-height:18px;"></p>
+                    <p id="ringSupportMsg" style="font-size:10px;color:#f59e0b;min-height:16px;"></p>
+                </div>
+                <div class="card" id="calendarPanel" style="display:none;">
+                    <div class="card-header">📅 <span data-i18n="calendar">日历</span></div>
+                    <div id="calendarMonth" style="font-weight:700;margin-bottom:9px;text-align:center;font-size:14px;"></div>
+                    <div class="cal-grid" id="calendarDays"></div>
+                </div>
+            </div>
+            <div class="tab-page" data-tab="security">
+                <div class="security-hero">
+                    <div class="shield-icon">🛡️</div>
+                    <div><h3 data-i18n="securityCenter">账户安全中心</h3><p data-i18n="securityDesc">管理设备、数据与隐私</p></div>
+                </div>
+                <div class="card" style="padding:8px 6px;">
+                    <div class="security-list-item" id="secDeviceInfo">
+                        <div class="s-icon blue">📱</div>
+                        <div class="s-info" style="flex:1;"><div class="s-title" data-i18n="deviceFingerprint">设备指纹</div><div class="s-desc" id="secDeviceFingerprint" style="font-size:10px;color:var(--text3);">--</div></div>
+                    </div>
+                    <div class="security-list-item">
+                        <div class="s-icon green">🌐</div>
+                        <div class="s-info" style="flex:1;"><div class="s-title" data-i18n="publicIP">公网IP</div><div class="s-desc" id="secPublicIP" style="font-size:10px;color:var(--text3);">获取中...</div></div>
+                    </div>
+                    <div class="security-list-item">
+                        <div class="s-icon purple">📅</div>
+                        <div class="s-info" style="flex:1;"><div class="s-title" data-i18n="useDays">已使用天数</div><div class="s-desc" id="secUseDays" style="font-size:10px;color:var(--text3);">-</div></div>
+                    </div>
+                    <div class="security-list-item">
+                        <div class="s-icon orange">👣</div>
+                        <div class="s-info" style="flex:1;"><div class="s-title" data-i18n="visitCount">累计访问次数</div><div class="s-desc" id="secVisitCount" style="font-size:10px;color:var(--text3);">-</div></div>
+                    </div>
+                </div>
+                <button class="btn btn-outline mt-2" id="secViewLogBtn">📄 <span data-i18n="viewLog">查看操作日志</span></button>
+                <button class="btn btn-outline mt-2" id="secExportLogBtn">📧 <span data-i18n="exportLog">备份日志并导出</span></button>
+                <button class="btn btn-outline mt-2" id="secClearCacheBtn">🗑️ <span data-i18n="clearCache">清除缓存</span></button>
+                <button class="btn btn-danger mt-2" id="secResetAllBtn">⚠️ <span data-i18n="resetAll">重置所有设置</span></button>
+            </div>
+            <div class="tab-page" data-tab="settings">
+                <div class="card">
+                    <div class="card-header">🎨 <span data-i18n="themeSettings">主题设置</span></div>
+                    <div class="flex-wrap gap-2" id="themeModeSelector">
+                        <span class="mode-chip" data-theme="light">☀️ 浅色</span>
+                        <span class="mode-chip" data-theme="dark">🌙 深色</span>
+                        <span class="mode-chip" data-theme="auto">🔄 自动</span>
+                    </div>
+                    <p class="text-xs text-muted mt-2">色彩主题</p>
+                    <div class="color-theme-options" id="colorThemeOptions">
+                        <div class="color-theme-dot active" data-color="default" style="background:#6c5ce7;"></div>
+                        <div class="color-theme-dot" data-color="blue" style="background:#3b82f6;"></div>
+                        <div class="color-theme-dot" data-color="green" style="background:#10b981;"></div>
+                        <div class="color-theme-dot" data-color="pink" style="background:#ec4899;"></div>
+                        <div class="color-theme-dot" data-color="orange" style="background:#f97316;"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">🌙 <span data-i18n="eyeCareSettings">护眼模式设置</span></div>
+                    <div class="toggle-row" id="eyeCareToggleRow">
+                        <span data-i18n="eyeCare">护眼模式</span>
+                        <div style="flex:1;"></div>
+                        <div class="toggle-track" id="eyeCareTrack"><div class="toggle-knob"></div></div>
+                        <span id="eyeCareStatus" style="font-size:11px;color:var(--text2);">关闭</span>
+                    </div>
+                    <div class="flex-wrap gap-2 mt-2" id="eyeCareModeSelector">
+                        <span class="mode-chip" data-mode="off" data-i18n="manualOff">手动关闭</span>
+                        <span class="mode-chip" data-mode="on" data-i18n="manualOn">手动开启</span>
+                        <span class="mode-chip" data-mode="auto" data-i18n="autoNight">自动（夜间）</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">🧹 <span data-i18n="pureMode">纯净模式</span></div>
+                    <div class="toggle-row" id="pureModeToggleRow">
+                        <span data-i18n="pureModeDesc">开启后拦截网页类广告</span>
+                        <div style="flex:1;"></div>
+                        <div class="toggle-track" id="pureModeTrack"><div class="toggle-knob"></div></div>
+                        <span id="pureModeStatus" style="font-size:11px;color:var(--text2);">关闭</span>
+                    </div>
+                    <p class="text-xs text-muted mt-2" data-i18n="pureModeHint">实验性功能，可阻止部分广告弹窗、跳转及恶意脚本</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">🌏 <span data-i18n="proxyMode">代理模式</span> <span style="font-size:9px;background:var(--accent-glow);padding:2px 6px;border-radius:20px;">🇭🇰🇲🇴🇹🇼 高速</span></div>
+                    <div class="toggle-row" id="proxyModeToggleRow">
+                        <span data-i18n="proxyModeDesc">启用智能路由 (港澳台节点)</span>
+                        <div style="flex:1;"></div>
+                        <div class="toggle-track" id="proxyModeTrack"><div class="toggle-knob"></div></div>
+                        <span id="proxyModeStatus" style="font-size:11px;color:var(--text2);">关闭</span>
+                    </div>
+                    <div class="flex-wrap gap-2 mt-2">
+                        <select id="proxyRegionSelect" style="flex:2;padding:8px 12px;border-radius:24px;border:1.5px solid var(--border);background:var(--bg-alt);color:var(--text);font-size:11px;">
+                            <option value="hk">🇭🇰 香港节点 (低延迟)</option>
+                            <option value="mo">🇲🇴 澳门节点 (稳定)</option>
+                            <option value="tw">🇹🇼 台湾节点 (高速)</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline" id="testProxyBtn">⚡ 测试代理</button>
+                    </div>
+                    <p class="text-xs text-muted mt-2" id="proxyTestMsg" data-i18n="proxyHint">选择区域后开启代理，将尝试通过高速节点访问外链</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">🌐 <span data-i18n="langSettings">语言设置</span></div>
+                    <div class="flex-wrap gap-2" id="settingsLangList"></div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-nav">
+            <div class="nav-item active" data-target="home"><span class="nav-icon">🏠</span><span data-i18n="navHome">首页</span></div>
+            <div class="nav-item" data-target="video"><span class="nav-icon">🎬</span><span data-i18n="navVideo">影娱</span></div>
+            <div class="nav-item" data-target="game"><span class="nav-icon">🎮</span><span data-i18n="navGame">游戏</span></div>
+            <div class="nav-item" data-target="tool"><span class="nav-icon">🛠️</span><span data-i18n="navTool">工具</span></div>
+            <div class="nav-item" data-target="security"><span class="nav-icon">🔐</span><span data-i18n="navSecurity">安全</span></div>
+            <div class="nav-item" data-target="settings"><span class="nav-icon">⚙️</span><span data-i18n="navSettings">设置</span></div>
+        </div>
+    </div>
+    <div id="alarmStopSnackbar" class="alarm-snackbar hide">
+        <span class="snack-text" id="alarmSnackbarText">⏰ 闹钟时间到！</span>
+        <button class="snack-btn" id="forceStopAlarmBtn" data-i18n="stopAlarm">停止闹钟</button>
+    </div>
+    <div class="modal-overlay" id="infoModal"><div class="modal-box"><span class="modal-close" onclick="closeModal('infoModal')">✖</span><h3 data-i18n="devInfo">设备信息</h3><div id="infoDetails"></div></div></div>
+    <div class="modal-overlay" id="clearModal"><div class="modal-box"><span class="modal-close" onclick="closeModal('clearModal')">✖</span><h3 data-i18n="clearCache">清除缓存</h3>
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;"><input type="checkbox" id="cleanPage"> <span data-i18n="pageCache">页面缓存</span></label>
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;"><input type="checkbox" id="cleanLog"> <span data-i18n="opLog">操作日志</span></label>
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;"><input type="checkbox" id="cleanAll"> <span data-i18n="cleanAll">一键清理</span></label>
+        <button class="btn btn-primary mt-2" onclick="doCleanCache()" data-i18n="startClean">开始清理</button>
+    </div></div>
+    <div class="modal-overlay" id="logModal"><div class="modal-box"><span class="modal-close" onclick="closeModal('logModal')">✖</span><h3 data-i18n="viewLog">操作日志</h3><textarea id="logText" rows="8" readonly></textarea>
+        <div class="flex-wrap gap-2 mt-2"><button class="btn btn-sm btn-outline" onclick="exportAllLog()">导出</button><button class="btn btn-sm btn-outline" onclick="clearLocalLog()">清空</button></div>
+    </div></div>
+    <div class="modal-overlay" id="noticeModal"><div class="modal-box"><span class="modal-close" onclick="closeModal('noticeModal')">✖</span><h3 id="noticeDetailTitle"></h3><div id="noticeDetailContent"></div></div></div>
+
+    <script>
+        // ==================== 浏览器伪装 (最早执行) ====================
+        (function applyBrowserCamouflage() {
+            const nav = navigator;
+            const win = window;
+            const doc = document;
+
+            // 清除自动化标识
+            const propsToDelete = [
+                '__webdriver_evaluate', '__selenium_evaluate', '__webdriver_script_function',
+                '__webdriver_script_func', '__webdriver_script_fn', '__fxdriver_evaluate',
+                '__driver_unwrapped', '__webdriver_unwrapped', '__selenium_unwrapped',
+                '__webdriver_script_fn', '__webdriver_script_function', '__webdriver_script_func',
+                '$cdc_asdjflasutopfhvcZLmcfl_', '$chrome_asyncScriptInfo',
+                '__nightmare', '__phantomJS', 'callPhantom', '_phantom', 'phantom',
+                'domAutomation', 'domAutomationController', 'webdriver',
+            ];
+            propsToDelete.forEach(prop => {
+                try { delete win[prop]; } catch (e) {}
+                try { delete doc[prop]; } catch (e) {}
+            });
+
+            // 覆盖 navigator.webdriver
+            try {
+                Object.defineProperty(nav, 'webdriver', {
+                    get: () => false,
+                    configurable: true,
+                    enumerable: true
+                });
+            } catch (e) {}
+
+            // 伪装 plugins (非空数组)
+            try {
+                const fakePlugin = {
+                    name: 'Chrome PDF Plugin',
+                    filename: 'internal-pdf-viewer',
+                    description: 'Portable Document Format',
+                    length: 1,
+                    0: { type: 'application/pdf', suffixes: 'pdf', description: 'PDF' },
+                    item: function(i) { return this[i]; },
+                    namedItem: function(n) { return n === 'Chrome PDF Plugin' ? this : null; },
+                };
+                const fakePluginArray = Object.create(PluginArray.prototype);
+                fakePluginArray.length = 5;
+                [fakePlugin,
+                    { name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai', description: '', length: 1,
+                        0: { type: 'application/pdf', suffixes: 'pdf' }, item: function(i) { return this[i]; },
+                        namedItem: function() { return null; } },
+                    { name: 'Native Client', filename: 'internal-nacl-plugin', description: '', length: 2, 0: { type: 'application/x-nacl',
+                            suffixes: '' }, 1: { type: 'application/x-pnacl', suffixes: '' }, item: function(i) { return this[
+                                i]; }, namedItem: function() { return null; } },
+                    { name: 'Widevine Content Decryption Module', filename: 'widevinecdmadapter.dll', description: '', length: 0,
+                        item: function() { return null; }, namedItem: function() { return null; } },
+                    { name: 'Chromium PDF Plugin', filename: 'internal-pdf-viewer', description: '', length: 1, 0: { type: 'application/pdf',
+                            suffixes: 'pdf' }, item: function(i) { return this[i]; }, namedItem: function() { return null; } },
+                ].forEach((p, i) => { fakePluginArray[i] = p; });
+                fakePluginArray.item = function(i) { return this[i] || null; };
+                fakePluginArray.namedItem = function(n) { return this[0] || null; };
+                fakePluginArray.refresh = function() {};
+                Object.defineProperty(nav, 'plugins', { get: () => fakePluginArray, configurable: true, enumerable: true });
+            } catch (e) {}
+
+            // 伪装 mimeTypes
+            try {
+                const fakeMimeType = { type: 'application/pdf', suffixes: 'pdf', description: 'PDF', enabledPlugin: nav.plugins ?
+                        nav.plugins[0] : null };
+                const fakeMimeArray = Object.create(MimeTypeArray.prototype);
+                fakeMimeArray.length = 4;
+                [fakeMimeType, { type: 'text/pdf', suffixes: 'pdf', description: '', enabledPlugin: null }, { type: 'application/x-nacl',
+                        suffixes: '', description: '', enabledPlugin: null }, { type: 'application/x-pnacl', suffixes: '',
+                        description: '', enabledPlugin: null }].forEach((m, i) => { fakeMimeArray[i] = m; });
+                fakeMimeArray.item = function(i) { return this[i] || null; };
+                fakeMimeArray.namedItem = function(n) { return this[0] || null; };
+                Object.defineProperty(nav, 'mimeTypes', { get: () => fakeMimeArray, configurable: true, enumerable: true });
+            } catch (e) {}
+
+            // 伪装 window.chrome
+            if (!win.chrome) {
+                try {
+                    win.chrome = {
+                        runtime: { onConnect: { addListener: function() {} }, onMessage: { addListener: function() {} },
+                            connect: function() { return { onMessage: { addListener: function() {} }, onDisconnect: { addListener: function() {} },
+                                    postMessage: function() {}, disconnect: function() {} }; }, sendMessage: function() {},
+                            getManifest: function() { return { version: '1.0', name: 'Chrome' }; }, },
+                        loadTimes: function() { return { requestTime: Date.now() / 1000 - 0.5, startLoadTime: Date.now() /
+                                1000 - 0.3, commitLoadTime: Date.now() / 1000 - 0.1, finishDocumentLoadTime: Date.now() /
+                                1000, finishLoadTime: Date.now() / 1000, firstPaintTime: Date.now() / 1000 - 0.05,
+                                firstPaintAfterLoadTime: Date.now() / 1000, navigationType: 'Other',
+                                wasFetchedViaSpdy: true, wasNpnNegotiated: true, connectionInfo: 'http/1.1', }; },
+                        csi: function() { return { startE: Date.now() - 1500, onloadT: Date.now() - 500, pageT: 1200,
+                                tran: 15 }; },
+                        app: { isInstalled: false, InstallState: { DISABLED: 'disabled', INSTALLED: 'installed',
+                                NOT_INSTALLED: 'not_installed' }, RunningState: { CANNOT_RUN: 'cannot_run',
+                                READY_TO_RUN: 'ready_to_run', RUNNING: 'running' }, },
+                    };
+                } catch (e) {}
+            }
+
+            // 伪装 navigator.vendor
+            try { Object.defineProperty(nav, 'vendor', { get: () => 'Google Inc.', configurable: true,
+                enumerable: true }); } catch (e) {}
+            try { Object.defineProperty(nav, 'vendorSub', { get: () => '', configurable: true,
+            enumerable: true }); } catch (e) {}
+
+            // 伪装 navigator.platform
+            try {
+                const ua = nav.userAgent || '';
+                let platform = 'Linux armv8l';
+                if (/Android/i.test(ua)) platform = 'Linux armv8l';
+                else if (/iPhone|iPad/i.test(ua)) platform = 'iPhone';
+                else if (/Mac/i.test(ua)) platform = 'MacIntel';
+                else if (/Windows/i.test(ua)) platform = 'Win32';
+                Object.defineProperty(nav, 'platform', { get: () => platform, configurable: true, enumerable: true });
+            } catch (e) {}
+
+            // 伪装 hardwareConcurrency
+            try { Object.defineProperty(nav, 'hardwareConcurrency', { get: () => 8, configurable: true,
+            enumerable: true }); } catch (e) {}
+
+            // 伪装 deviceMemory
+            try { Object.defineProperty(nav, 'deviceMemory', { get: () => 8, configurable: true,
+            enumerable: true }); } catch (e) {}
+
+            // 伪装 languages
+            try { Object.defineProperty(nav, 'languages', { get: () => ['zh-CN', 'zh', 'en-US', 'en'],
+                configurable: true, enumerable: true }); } catch (e) {}
+            try { Object.defineProperty(nav, 'language', { get: () => 'zh-CN', configurable: true,
+            enumerable: true }); } catch (e) {}
+
+            // 伪装 permissions (防止某些检测)
+            try {
+                const origPermissions = nav.permissions;
+                if (origPermissions && origPermissions.query) {
+                    const origQuery = origPermissions.query.bind(origPermissions);
+                    nav.permissions.query = function(desc) {
+                        return origQuery(desc).catch(() => ({ state: 'prompt', onchange: null }));
+                    };
+                }
+            } catch (e) {}
+
+            // 清除 document 上的自动化痕迹
+            try {
+                Object.defineProperty(doc, 'hidden', { get: () => false, configurable: true, enumerable: true });
+                Object.defineProperty(doc, 'visibilityState', { get: () => 'visible', configurable: true,
+                    enumerable: true });
+            } catch (e) {}
+
+            // 伪装 connection
+            try {
+                if (!nav.connection) {
+                    Object.defineProperty(nav, 'connection', {
+                        get: () => ({
+                            effectiveType: '4g',
+                            rtt: 50,
+                            downlink: 10,
+                            saveData: false,
+                            type: 'cellular',
+                            onchange: null,
+                        }),
+                        configurable: true,
+                        enumerable: true
+                    });
+                }
+            } catch (e) {}
+
+            // 覆盖 getBattery 返回正常值
+            try {
+                if (nav.getBattery) {
+                    const origGetBattery = nav.getBattery.bind(nav);
+                    nav.getBattery = function() {
+                        return origGetBattery().catch(() => Promise.resolve({
+                            charging: true,
+                            chargingTime: 0,
+                            dischargingTime: Infinity,
+                            level: 0.85,
+                            onchargingchange: null,
+                            onchargingtimechange: null,
+                            ondischargingtimechange: null,
+                            onlevelchange: null,
+                        }));
+                    };
+                }
+            } catch (e) {}
+
+            // 覆盖 mediaDevices
+            try {
+                if (!nav.mediaDevices) {
+                    Object.defineProperty(nav, 'mediaDevices', {
+                        get: () => ({
+                            enumerateDevices: () => Promise.resolve([]),
+                            getUserMedia: () => Promise.reject(new Error('NotAllowedError')),
+                            ondevicechange: null,
+                        }),
+                        configurable: true,
+                        enumerable: true
+                    });
+                }
+            } catch (e) {}
+
+            // 伪装 product
+            try { Object.defineProperty(nav, 'product', { get: () => 'Gecko', configurable: true,
+            enumerable: true }); } catch (e) {}
+            try { Object.defineProperty(nav, 'productSub', { get: () => '20030107', configurable: true,
+            enumerable: true }); } catch (e) {}
+            try { Object.defineProperty(nav, 'appVersion', { get: () => nav.userAgent || '5.0',
+                configurable: true, enumerable: true }); } catch (e) {}
+            try { Object.defineProperty(nav, 'appName', { get: () => 'Netscape', configurable: true,
+            enumerable: true }); } catch (e) {}
+            try { Object.defineProperty(nav, 'appCodeName', { get: () => 'Mozilla', configurable: true,
+            enumerable: true }); } catch (e) {}
+
+            // 伪装 cookieEnabled
+            try { Object.defineProperty(nav, 'cookieEnabled', { get: () => true, configurable: true,
+            enumerable: true }); } catch (e) {}
+            try { Object.defineProperty(nav, 'onLine', { get: () => true, configurable: true,
+            enumerable: true }); } catch (e) {}
+
+            // 伪装 javaEnabled
+            try {
+                nav.javaEnabled = function() { return false; };
+            } catch (e) {}
+
+            // 清除通过 defineProperty 可能遗留的痕迹
+            try {
+                const iframe = doc.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.sandbox = 'allow-same-origin';
+                doc.documentElement.appendChild(iframe);
+                setTimeout(() => { try { iframe.remove(); } catch (e) {} }, 100);
+            } catch (e) {}
+
+            // 伪装 Notification.permission
+            try {
+                if (win.Notification) {
+                    Object.defineProperty(Notification, 'permission', { get: () => 'default', configurable: true,
+                        enumerable: true });
+                }
+            } catch (e) {}
+
+            // 记录伪装完成
+            if (win.__browserCamouflageApplied === undefined) {
+                win.__browserCamouflageApplied = true;
+            }
+        })();
+
+        // ==================== 广告拦截增强 ====================
+        (function installAdvancedAdBlocker() {
+            const win = window;
+            const doc = document;
+            const AD_DOMAINS = [
+                'doubleclick.net', 'googleadservices.com', 'googlesyndication.com', 'googleads.g.doubleclick.net',
+                'adservice.google.com', 'adservice.google.cn', 'pagead2.googlesyndication.com',
+                'ad.doubleclick.net', 'adclick.g.doubleclick.net', 'ade.googlesyndication.com',
+                'ads.youtube.com', 'ads.google.com', 'adserver.adtechus.com', 'advertising.com',
+                'servedbyadbutler.com', 'adnxs.com', 'rubiconproject.com', 'openx.net', 'pubmatic.com',
+                'criteo.com', 'criteo.net', 'casalemedia.com', 'indexww.com', 'contextweb.com',
+                'sovrn.com', 'sharethrough.com', 'smartadserver.com', 'smaato.net', 'mopub.com',
+                'inmobi.com', 'tapjoy.com', 'chartboost.com', 'vungle.com', 'ironsrc.com',
+                'unityads.unity3d.com', 'applovin.com', 'fyber.com', 'adcolony.com', 'ogury.com',
+                'mintegral.com', 'pangle.io', 'bytedance.com/ad', 'pangleglobal.com',
+                'popads.net', 'popcash.net', 'propellerads.com', 'adsterra.com', 'exoclick.com',
+                'trafficjunky.com', 'trafficfactory.biz', 'juicyads.com', 'eroadvertising.com',
+                'plugrush.com', 'adhall.com', 'bidvertiser.com', 'clicksor.com', 'adversal.com',
+                'revcontent.com', 'mgid.com', 'outbrain.com', 'taboola.com', 'zemanta.com',
+                'adblade.com', 'nativeads.com', 'content.ad', 'adsrvr.org', 'adform.net',
+                '33across.com', 'sonobi.com', 'lijit.com', 'gumgum.com', 'triplelift.com',
+                'kargo.com', 'undertone.com', 'conversantmedia.com', 'media.net',
+                'amazon-adsystem.com', 'aaxads.com', 'cedexis.com', 'moatads.com',
+                'krxd.net', 'bluekai.com', 'exelator.com', 'demdex.net', 'adsrvr.org',
+                'adsymptotic.com', 'adzerk.net', 'bidr.io', 'beachfront.io', 'springserve.com',
+            ];
+
+            const AD_CLASS_PATTERNS = [
+                /^ad[s]?[_-]/, /[_-]ad[s]?[_-]/, /[_-]ad[s]?$/, /^advertisement/, /^adsbygoogle/,
+                /^banner[_-]?ad/, /^sponsored/, /^promoted/, /^popup/, /^pop[_-]?up/,
+                /[_-]pop[_-]/, /^modal[_-]?ad/, /^overlay[_-]?ad/, /^interstitial/,
+                /^google[_-]?ad/, /^dfp[_-]/, /^dcm[_-]/, /^taboola/, /^outbrain/,
+                /^mgid/, /^revcontent/, /^adblade/, /^native[_-]?ad/,
+            ];
+
+            const AD_ID_PATTERNS = [
+                /^ad[s]?[_-]/, /[_-]ad[s]?[_-]/, /[_-]ad[s]?$/, /^advertisement/, /^adsbygoogle/,
+                /^google[_-]?ad/, /^dfp[_-]/, /^taboola/, /^outbrain/, /^mgid/,
+                /^revcontent/, /^popup/, /^pop[_-]?up/, /^banner[_-]?ad/,
+            ];
+
+            // 检查URL是否为广告域名
+            function isAdUrl(url) {
+                if (!url || typeof url !== 'string') return false;
+                const lower = url.toLowerCase();
+                for (const domain of AD_DOMAINS) {
+                    if (lower.includes(domain)) return true;
+                }
+                return false;
+            }
+
+            // 检查元素是否为广告
+            function isAdElement(el) {
+                if (!el || !el.className && !el.id) return false;
+                const cls = (el.className || '').toString().toLowerCase();
+                const id = (el.id || '').toString().toLowerCase();
+                for (const pat of AD_CLASS_PATTERNS) {
+                    if (pat.test(cls)) return true;
+                }
+                for (const pat of AD_ID_PATTERNS) {
+                    if (pat.test(id)) return true;
+                }
+                return false;
+            }
+
+            // 存储原始的window.open
+            if (!win.__originalOpen) {
+                win.__originalOpen = win.open;
+            }
+
+            // 增强的window.open拦截
+            win.open = function(url, target, features) {
+                if (isAdUrl(url)) {
+                    if (win.saveLocalLog) win.saveLocalLog('🔒 广告拦截(open): ' + (typeof url === 'string' ? url.substring(0,
+                        80) : ''));
+                    return null;
+                }
+                if (target === '_blank' && features && /width|height|popup/i.test(features)) {
+                    if (isAdUrl(url)) return null;
+                }
+                return win.__originalOpen.call(this, url, target, features);
+            };
+
+            // 拦截动态创建的广告iframe
+            const origCreateElement = doc.createElement.bind(doc);
+            doc.createElement = function(tagName, options) {
+                const el = origCreateElement(tagName, options);
+                if (tagName.toLowerCase() === 'iframe') {
+                    const origSetAttr = el.setAttribute.bind(el);
+                    el.setAttribute = function(name, value) {
+                        if (name.toLowerCase() === 'src' && isAdUrl(value)) {
+                            if (win.saveLocalLog) win.saveLocalLog('🔒 广告拦截(iframe): ' + value.substring(0, 80));
+                            return;
+                        }
+                        return origSetAttr(name, value);
+                    };
+                    const origSetProp = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'src')?.set;
+                    if (origSetProp) {
+                        Object.defineProperty(el, 'src', {
+                            set: function(v) {
+                                if (isAdUrl(v)) {
+                                    if (win.saveLocalLog) win.saveLocalLog('🔒 广告拦截(iframe src): ' + v.substring(0,
+                                        80));
+                                    return;
+                                }
+                                origSetProp.call(this, v);
+                            },
+                            get: function() { return origSetProp ? origSetProp.call(this) : ''; },
+                            configurable: true,
+                            enumerable: true,
+                        });
+                    }
+                }
+                return el;
+            };
+
+            // MutationObserver 移除广告DOM元素
+            let adObserverRunning = false;
+
+            function startAdObserver() {
+                if (adObserverRunning) return;
+                adObserverRunning = true;
+                const observer = new MutationObserver((mutations) => {
+                    for (const mutation of mutations) {
+                        for (const node of mutation.addedNodes) {
+                            if (node.nodeType === 1 && isAdElement(node)) {
+                                try { node.style.display = 'none';
+                                    node.remove(); } catch (e) {}
+                                if (win.saveLocalLog) win.saveLocalLog('🔒 广告拦截(DOM): ' + (node.tagName || ''));
+                            }
+                            if (node.nodeType === 1 && node.tagName === 'IFRAME') {
+                                const src = node.getAttribute('src') || node.src || '';
+                                if (isAdUrl(src)) {
+                                    try { node.remove(); } catch (e) {}
+                                    if (win.saveLocalLog) win.saveLocalLog('🔒 广告拦截(动态iframe): ' + src.substring(0,
+                                        80));
+                                }
+                            }
+                        }
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+                            const el = mutation.target;
+                            if (el && el.tagName === 'IFRAME') {
+                                const src = el.getAttribute('src') || el.src || '';
+                                if (isAdUrl(src)) {
+                                    try { el.remove(); } catch (e) {}
+                                }
+                            }
+                        }
+                    }
+                });
+                observer.observe(doc.documentElement, { childList: true, subtree: true, attributes: true,
+                    attributeFilter: ['src', 'href'] });
+                return observer;
+            }
+
+            let adObserverInstance = null;
+            // 全局广告拦截开关
+            win.__adBlockObserver = {
+                start: function() {
+                    if (!adObserverInstance) adObserverInstance = startAdObserver();
+                },
+                stop: function() {
+                    if (adObserverInstance) { adObserverInstance.disconnect();
+                        adObserverInstance = null;
+                        adObserverRunning = false; }
+                },
+                isAdUrl: isAdUrl,
+                isAdElement: isAdElement,
+            };
+
+            // 默认启动（后续由纯净模式控制）
+            win.__adBlockObserver.start();
+        })();
+
+        // ==================== 翻译系统 ====================
+        const translationCache = {};
+        const sourceTextMap = new Map();
+        let translateVersion = 0;
+        const SUPPORTED_LANGS = [
+            { code: 'zh-CN', name: '简体中文', nativeName: '简体中文', flag: '🇨🇳' },
+            { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸' },
+            { code: 'ja', name: '日本語', nativeName: '日本語', flag: '🇯🇵' },
+            { code: 'ko', name: '한국어', nativeName: '한국어', flag: '🇰🇷' },
+            { code: 'zh-TW', name: '繁體中文', nativeName: '繁體中文', flag: '🇹🇼' },
+            { code: 'ar', name: 'العربية', nativeName: 'العربية', flag: '🇸🇦' },
+            { code: 'fr', name: 'Français', nativeName: 'Français', flag: '🇫🇷' },
+            { code: 'de', name: 'Deutsch', nativeName: 'Deutsch', flag: '🇩🇪' },
+            { code: 'es', name: 'Español', nativeName: 'Español', flag: '🇪🇸' },
+            { code: 'pt', name: 'Português', nativeName: 'Português', flag: '🇵🇹' },
+        ];
+
+        function detectSystemLanguage() {
+            const s = (navigator.language || 'zh-CN').trim();
+            const map = { zh: 'zh-CN', 'zh-TW': 'zh-TW', 'zh-HK': 'zh-TW', en: 'en', ja: 'ja', ko: 'ko', ar: 'ar', fr: 'fr',
+                de: 'de', es: 'es', pt: 'pt' };
+            if (map[s]) return map[s];
+            const p = s.split('-')[0];
+            return map[p] || 'zh-CN';
+        }
+
+        function getLang() {
+            const stored = localStorage.getItem('appLang');
+            if (stored && stored !== 'auto' && SUPPORTED_LANGS.some(l => l.code === stored)) return stored;
+            return detectSystemLanguage();
+        }
+
+        function getStoredLangSetting() { return localStorage.getItem('appLang') || 'auto'; }
+
+        function $(id) { return document.getElementById(id); }
+
+        function openModal(id) { $(id).classList.add('show'); }
+
+        function closeModal(id) { $(id).classList.remove('show'); }
+
+        function saveLocalLog(msg) {
+            let l = localStorage.getItem('localSystemLog') || '';
+            l += `[${new Date().toLocaleString()}] ${msg}\n`;
+            if (l.length > 50000) l = l.slice(-40000);
+            localStorage.setItem('localSystemLog', l);
+        }
+
+        function exportAllLog() { const b = new Blob([localStorage.getItem('localSystemLog') || ''], { type: 'text/plain' }); const
+                a = document.createElement('a');
+            a.href = URL.createObjectURL(b);
+            a.download = 'log.txt';
+            a.click();
+            saveLocalLog('导出日志'); }
+
+        function clearLocalLog() { if (confirm('清空日志？')) { localStorage.removeItem('localSystemLog');
+                $('logText').value = ''; } }
+
+        function doCleanCache() {
+            if ($('cleanPage')?.checked) sessionStorage.clear();
+            if ($('cleanLog')?.checked) localStorage.removeItem('localSystemLog');
+            if ($('cleanAll')?.checked) { sessionStorage.clear();
+                localStorage.removeItem('localSystemLog');
+                localStorage.removeItem('aiTransCache'); }
+            alert('清理完成 ✓');
+            closeModal('clearModal');
+            updateSecurityDisplay();
+        }
+
+        function updateLangUI() {
+            const stored = getStoredLangSetting();
+            document.querySelectorAll('#settingsLangList .mode-chip[data-lang]').forEach(el => el.classList.toggle('active',
+                stored === 'auto' ? el.dataset.lang === 'auto' : el.dataset.lang === stored));
+            const info = SUPPORTED_LANGS.find(l => l.code === getLang()) || { nativeName: '简体中文' };
+            $('nowLang').textContent = info.nativeName + (stored === 'auto' ? ' (自动)' : '');
+        }
+
+        function populateLangMenu() {
+            const c = $('settingsLangList');
+            if (!c) return;
+            const stored = getStoredLangSetting();
+            c.innerHTML =
+                `<span class="mode-chip auto-chip${stored==='auto'?' active':''}" data-lang="auto">🌐 跟随系统</span>` +
+                SUPPORTED_LANGS.map(l =>
+                    `<span class="mode-chip${stored===l.code?' active':''}" data-lang="${l.code}">${l.flag} ${l.nativeName}</span>`
+                ).join('');
+            c.querySelectorAll('.mode-chip[data-lang]').forEach(ch => ch.addEventListener('click', () => setLang(ch.dataset
+                .lang)));
+        }
+
+        function collectSourceTexts() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const k = el.getAttribute('data-i18n');
+                if (!sourceTextMap.has(k)) sourceTextMap.set(k, el.textContent.trim());
+            });
+        }
+
+        function restoreSourceTexts() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const src = sourceTextMap.get(el.getAttribute('data-i18n'));
+                if (src) el.textContent = src;
+            });
+        }
+
+        async function translateBatch(texts, tl) {
+            if (tl === 'zh-CN') return texts;
+            const sep = '\n|||\n';
+            const comb = texts.join(sep);
+            try {
+                const r = await fetch(
+                    `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${tl}&dt=t&q=${encodeURIComponent(comb)}`
+                );
+                const d = await r.json();
+                const parts = (d[0] || []).map(i => i[0] || '').join('').split(/\n?\|\|\|\n?/);
+                return texts.map((t, i) => parts[i]?.trim() || t);
+            } catch { return texts; }
+        }
+
+        async function applyAITranslations(tl, vTok) {
+            if (tl === 'zh-CN') { restoreSourceTexts(); return; }
+            const ind = $('translateIndicator');
+            ind.classList.add('visible');
+            const els = [...document.querySelectorAll('[data-i18n]')];
+            const texts = els.map(el => sourceTextMap.get(el.getAttribute('data-i18n')) || el.textContent.trim());
+            const uniq = [...new Set(texts)];
+            const map = {};
+            if (uniq.length) {
+                const results = await translateBatch(uniq, tl);
+                uniq.forEach((t, i) => map[t] = results[i] || t);
+            }
+            if (vTok !== translateVersion) { ind.classList.remove('visible'); return; }
+            els.forEach(el => { el.textContent = map[sourceTextMap.get(el.getAttribute('data-i18n')) || el.textContent
+                    .trim()] || el.textContent; });
+            ind.textContent = '✅ 翻译完成';
+            setTimeout(() => ind.classList.remove('visible'), 1200);
+            updateLangUI();
+            updateEyeCareUI();
+        }
+
+        function setLang(code) {
+            localStorage.setItem('appLang', code === 'auto' ? 'auto' : code);
+            updateLangUI();
+            translateVersion++;
+            const tl = getLang();
+            applyAITranslations(tl, translateVersion);
+            document.body.classList.toggle('rtl', tl === 'ar');
+            saveLocalLog('切换语言: ' + (code === 'auto' ? '自动(' + tl + ')' : code));
+        }
+
+        // ==================== 天气（增强版：IP定位 + 真实温度 + 10分钟自动刷新） ====================
+        let weatherDataCache = null;
+        let locationDataCache = null;
+
+        async function fetchLocationByIP() {
+            try {
+                const resp = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
+                const data = await resp.json();
+                if (data && data.city) {
+                    locationDataCache = {
+                        city: data.city,
+                        region: data.region || '',
+                        country: data.country_name || '',
+                        countryCode: data.country_code || '',
+                        lat: data.latitude,
+                        lon: data.longitude,
+                    };
+                    return locationDataCache;
+                }
+            } catch (e) {
+                // 备用：使用 ipinfo.io
+                try {
+                    const resp2 = await fetch('https://ipinfo.io/json', { cache: 'no-store' });
+                    const data2 = await resp2.json();
+                    if (data2 && data2.city) {
+                        locationDataCache = {
+                            city: data2.city,
+                            region: data2.region || '',
+                            country: data2.country || '',
+                            countryCode: data2.country || '',
+                            lat: null,
+                            lon: null,
+                        };
+                        return locationDataCache;
+                    }
+                } catch (e2) {}
+            }
+            return null;
+        }
+
+        async function fetchWeather() {
+            try {
+                // 并行请求位置和天气，添加时间戳防止缓存
+                const cacheBuster = Date.now();
+                const [locData, weatherResp] = await Promise.all([
+                    fetchLocationByIP().catch(() => null),
+                    fetch(`https://wttr.in/?format=j1&_t=${cacheBuster}`, { cache: 'no-store' }).catch(() => null),
+                ]);
+
+                let weatherData = null;
+                if (weatherResp) {
+                    try { weatherData = await weatherResp.json(); } catch (e) { weatherData = null; }
+                }
+
+                // 获取天气代码和温度
+                let weatherCode = '113';
+                let tempC = '--';
+                let wttrCity = '';
+                if (weatherData && weatherData.current_condition && weatherData.current_condition[0]) {
+                    const cur = weatherData.current_condition[0];
+                    weatherCode = cur.weatherCode || '113';
+                    tempC = cur.temp_C || '--';
+                    try {
+                        wttrCity = weatherData.nearest_area?.[0]?.areaName?.[0]?.value || '';
+                        if (!wttrCity) wttrCity = weatherData.nearest_area?.[0]?.region?.[0]?.value || '';
+                    } catch (e) { wttrCity = ''; }
+                }
+
+                // 图标映射
+                const iconMap = {
+                    '113': '☀️',
+                    '116': '⛅',
+                    '119': '☁️',
+                    '122': '☁️',
+                    '143': '🌫️',
+                    '176': '🌦️',
+                    '179': '🌨️',
+                    '182': '🌨️',
+                    '200': '⛈️',
+                    '227': '🌬️',
+                    '248': '🌫️',
+                    '263': '🌧️',
+                    '266': '🌧️',
+                    '281': '🌧️',
+                    '293': '🌧️',
+                    '296': '🌧️',
+                    '299': '🌧️',
+                    '302': '🌧️',
+                    '305': '🌧️',
+                    '308': '🌧️',
+                    '311': '🌧️',
+                    '323': '🌨️',
+                    '326': '🌨️',
+                    '332': '🌨️',
+                    '335': '🌨️',
+                    '338': '🌨️',
+                    '350': '🌨️',
+                    '353': '🌧️',
+                    '356': '🌧️',
+                    '359': '🌧️',
+                    '362': '🌨️',
+                    '365': '🌨️',
+                    '368': '🌨️',
+                    '371': '🌨️',
+                    '374': '🌨️',
+                    '377': '🌨️',
+                    '386': '⛈️',
+                    '389': '⛈️',
+                    '392': '⛈️',
+                    '395': '🌨️'
+                };
+
+                const icon = iconMap[weatherCode] || '🌤️';
+
+                // 城市名：优先使用ipapi的数据，其次wttr的数据
+                let cityName = '';
+                if (locData && locData.city) {
+                    cityName = locData.city;
+                    if (locData.region && locData.region !== locData.city) cityName += ',' + locData.region;
+                } else if (wttrCity) {
+                    cityName = wttrCity;
+                } else {
+                    cityName = '当前位置';
+                }
+
+                // 更新UI
+                $('weatherIcon').textContent = icon;
+                $('weatherTemp').textContent = tempC + '°C';
+                $('weatherCity').textContent = cityName;
+
+                // 缓存天气数据用于详情展示
+                weatherDataCache = {
+                    icon,
+                    tempC,
+                    cityName,
+                    weatherCode,
+                    locData,
+                    wttrCity,
+                    weatherDesc: weatherData?.current_condition?.[0]?.weatherDesc?.[0]?.value || '',
+                    humidity: weatherData?.current_condition?.[0]?.humidity || '',
+                    windSpeed: weatherData?.current_condition?.[0]?.windspeedKmph || '',
+                    feelsLike: weatherData?.current_condition?.[0]?.FeelsLikeC || '',
+                };
+
+                saveLocalLog('天气更新: ' + cityName + ' ' + tempC + '°C ' + icon);
+            } catch (e) {
+                $('weatherIcon').textContent = '🌤️';
+                $('weatherTemp').textContent = '--°';
+                $('weatherCity').textContent = '获取中...';
+                weatherDataCache = null;
+            }
+        }
+
+        function showWeatherTooltip(e) {
+            const tip = $('weatherTooltip');
+            if (!tip || !weatherDataCache) return;
+            const wd = weatherDataCache;
+            let html = `<strong>📍 ${wd.cityName}</strong><br>`;
+            html += `<span style="font-size:24px;">${wd.icon}</span> <strong>${wd.tempC}°C</strong><br>`;
+            if (wd.weatherDesc) html += `天气: ${wd.weatherDesc}<br>`;
+            if (wd.feelsLike) html += `体感: ${wd.feelsLike}°C<br>`;
+            if (wd.humidity) html += `湿度: ${wd.humidity}%<br>`;
+            if (wd.windSpeed) html += `风速: ${wd.windSpeed} km/h<br>`;
+            html += `<small style="color:var(--text3);">点击刷新天气</small>`;
+            tip.innerHTML = html;
+            const rect = e.target.getBoundingClientRect();
+            tip.style.left = Math.min(rect.left, window.innerWidth - 280) + 'px';
+            tip.style.top = (rect.bottom + 8) + 'px';
+            tip.classList.add('show');
+        }
+
+        function hideWeatherTooltip() {
+            const tip = $('weatherTooltip');
+            if (tip) tip.classList.remove('show');
+        }
+
+        // ==================== 色彩主题 ====================
+        function getColorTheme() { return localStorage.getItem('colorTheme') || 'default'; }
+
+        function applyColorTheme() {
+            document.body.setAttribute('data-color-theme', getColorTheme());
+            document.querySelectorAll('.color-theme-dot').forEach(d => d.classList.toggle('active', d.dataset.color ===
+                getColorTheme()));
+        }
+
+        // ==================== 主题亮度 ====================
+        function getTheme() { return localStorage.getItem('appTheme') || 'auto'; }
+
+        function setTheme(m) { localStorage.setItem('appTheme', m);
+            applyTheme();
+            updateThemeUI(); }
+
+        function applyTheme() { document.body.classList.toggle('dark', getTheme() === 'dark' || (getTheme() === 'auto' && matchMedia(
+                '(prefers-color-scheme: dark)').matches)); }
+
+        function updateThemeUI() {
+            document.querySelectorAll('#themeModeSelector .mode-chip').forEach(c => c.classList.toggle('active', c.dataset
+                .theme === getTheme()));
+            $('themeBtn').textContent = { light: '☀️', dark: '🌙', auto: '🌓' } [getTheme()] || '🌓';
+        }
+
+        // ==================== 护眼模式 ====================
+        function getEyeCareMode() { return localStorage.getItem('eyeCareMode') || 'off'; }
+
+        function setEyeCareMode(m) { localStorage.setItem('eyeCareMode', m);
+            applyEyeCareMode();
+            updateEyeCareUI(); }
+
+        function isNightTime() { const h = new Date().getHours(); return h >= 18 || h < 6; }
+
+        function shouldEyeCareBeActive() { return getEyeCareMode() === 'on' || (getEyeCareMode() === 'auto' && isNightTime()); }
+
+        function applyEyeCareMode() { document.body.classList.toggle('eye-care-active', shouldEyeCareBeActive()); }
+
+        function updateEyeCareUI() {
+            const a = shouldEyeCareBeActive();
+            const track = $('eyeCareTrack');
+            const statusSpan = $('eyeCareStatus');
+            if (track) track.classList.toggle('on', a);
+            if (statusSpan) { statusSpan.textContent = a ? '已开启' : '关闭';
+                statusSpan.style.color = a ? '#f59e0b' : 'var(--text2)'; }
+            document.querySelectorAll('#eyeCareModeSelector .mode-chip').forEach(c => c.classList.toggle('active', c.dataset
+                .mode === getEyeCareMode()));
+        }
+
+        function toggleEyeCareQuick() { setEyeCareMode(getEyeCareMode() === 'off' ? 'on' : (getEyeCareMode() === 'on' ? 'auto' :
+                'off')); }
+
+        // ==================== 纯净模式（增强版：结合广告拦截） ====================
+        let pureModeEnabled = localStorage.getItem('pureMode') === 'true';
+
+        function updatePureModeUI() {
+            const track = $('pureModeTrack');
+            const statusSpan = $('pureModeStatus');
+            if (track) track.classList.toggle('on', pureModeEnabled);
+            if (statusSpan) statusSpan.textContent = pureModeEnabled ? '已开启' : '关闭';
+        }
+
+        function setPureMode(enabled) {
+            pureModeEnabled = enabled;
+            localStorage.setItem('pureMode', enabled);
+            updatePureModeUI();
+            installAdInterceptor();
+            // 控制DOM观察器
+            if (enabled && window.__adBlockObserver) {
+                window.__adBlockObserver.start();
+            } else if (!enabled && window.__adBlockObserver) {
+                window.__adBlockObserver.stop();
+            }
+            saveLocalLog(`纯净模式${enabled?'开启':'关闭'} (广告拦截${enabled?'启用':'停用'})`);
+        }
+
+        function installAdInterceptor() {
+            if (pureModeEnabled) {
+                if (!window.__adBlockerActive) {
+                    // window.open已在广告拦截脚本中处理
+                    window.__adBlockerActive = true;
+                    if (window.__adBlockObserver) window.__adBlockObserver.start();
+                }
+            } else {
+                if (window.__adBlockerActive) {
+                    window.__adBlockerActive = false;
+                    if (window.__adBlockObserver) window.__adBlockObserver.stop();
+                }
+            }
+        }
+
+        // ==================== 代理模式 ====================
+        let proxyEnabled = localStorage.getItem('proxyMode') === 'true';
+        let proxyRegion = localStorage.getItem('proxyRegion') || 'hk';
+
+        function updateProxyUI() {
+            const track = $('proxyModeTrack');
+            const statusSpan = $('proxyModeStatus');
+            if (track) track.classList.toggle('on', proxyEnabled);
+            if (statusSpan) statusSpan.textContent = proxyEnabled ? '已启用' : '关闭';
+            const select = $('proxyRegionSelect');
+            if (select) select.value = proxyRegion;
+        }
+
+        function setProxyMode(enabled) {
+            proxyEnabled = enabled;
+            localStorage.setItem('proxyMode', enabled);
+            updateProxyUI();
+            saveLocalLog(`代理模式${enabled?'开启':'关闭'} 区域:${proxyRegion}`);
+        }
+
+        function setProxyRegion(region) {
+            proxyRegion = region;
+            localStorage.setItem('proxyRegion', region);
+            updateProxyUI();
+            saveLocalLog(`切换代理区域: ${region}`);
+        }
+
+        async function testProxySpeed() {
+            if (!proxyEnabled) {
+                alert('请先开启代理模式');
+                return;
+            }
+            const msgDiv = $('proxyTestMsg');
+            msgDiv.textContent = `正在测试 ${proxyRegion==='hk'?'香港':proxyRegion==='mo'?'澳门':'台湾'} 节点延迟...`;
+            try {
+                const start = Date.now();
+                const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
+                const data = await res.json();
+                const latency = Date.now() - start;
+                msgDiv.textContent = `✅ 代理测试通过 (出口IP: ${data.ip}) 延迟: ${latency}ms`;
+                saveLocalLog(`代理测试成功 区域:${proxyRegion} 延迟:${latency}ms IP:${data.ip}`);
+            } catch (e) {
+                msgDiv.textContent = `⚠️ 代理测试失败: 网络错误`;
+                saveLocalLog(`代理测试失败: ${e.message}`);
+            }
+        }
+
+        // ==================== 闹钟 ====================
+        let currentAlarmTimeout, isAlarmRinging = false,
+            currentRingtoneForAlarm, alarmRepeatCount = 0,
+            alarmRepeatTimer, alarmCountdownTimer, targetAlarmTime;
+        const ALARM_MAX_REPEATS = 5;
+
+        function isRingSupported() { return typeof AndroidRing !== 'undefined' && AndroidRing?.getRingList; }
+
+        function loadRingtoneList() {
+            const s = $('ringtoneSelect');
+            if (!isRingSupported()) { s.innerHTML = '<option>--</option>';
+                $('ringSupportMsg').textContent = '⚠️ 不支持原生铃声'; return; }
+            try {
+                const r = AndroidRing.getRingList();
+                const items = r ? r.split(',').map(x => x.trim()).filter(x => x) : ['ring01.mp3', 'ring02.mp3'];
+                s.innerHTML = items.map(f => {
+                    const n = f.replace(/\.(mp3|wav)$/i, '');
+                    // 自定义铃声显示名称
+                    let display = f;
+                    if (n.toLowerCase() === 'morning') {
+                        display = '河南浪漫宣言';
+                    } else if (n.toLowerCase() === 'clock') {
+                        display = '疯癫少女';
+                    } else if (n === 'ring01') {
+                        display = '5:20am（DJ版）';
+                    }
+                    return `<option value="${n}">${display}</option>`;
+                }).join('');
+                $('ringSupportMsg').textContent = '✅ 铃声列表已加载';
+            } catch { $('ringSupportMsg').textContent = '⚠️ 不支持原生铃声'; }
+        }
+
+        function previewRingtone() { if (isRingSupported()) try { AndroidRing.playRing($('ringtoneSelect').value); } catch {} }
+
+        function stopRingtone() { if (isRingSupported()) try { AndroidRing.stopRing(); } catch {} if (isAlarmRinging) { $(
+                'alarmStopSnackbar').classList.add('hide');
+                isAlarmRinging = false; } clearAllAlarmTimers(); }
+
+        function clearAllAlarmTimers() {
+            [currentAlarmTimeout, alarmRepeatTimer, alarmCountdownTimer].forEach(t => { if (t) { clearTimeout(t);
+                    clearInterval(t); } });
+            currentAlarmTimeout = alarmRepeatTimer = alarmCountdownTimer = null;
+            alarmRepeatCount = 0;
+            targetAlarmTime = null;
+        }
+
+        function stopAlarmAndClear() { if (isRingSupported()) AndroidRing.stopRing();
+            $('alarmStopSnackbar').classList.add('hide');
+            isAlarmRinging = false;
+            clearAllAlarmTimers();
+            $('alarmStatus').textContent = '闹钟已停止。';
+            $('alarmStatus').className = ''; }
+
+        function triggerAlarmPlay(rn, num) {
+            if (!rn || !isRingSupported()) return;
+            try { AndroidRing.playRing(rn); } catch {}
+            $('alarmStopSnackbar').classList.remove('hide');
+            $('alarmSnackbarText').textContent = num > 1 ? `⏰ 第${num}次响铃...` : '⏰ 闹钟时间到！';
+            isAlarmRinging = true;
+            $('alarmStatus').textContent = `响铃中...第${num}次`;
+            $('alarmStatus').className = 'ringing-hl';
+        }
+
+        function scheduleNextRepeat(rn, nxt) {
+            if (nxt > ALARM_MAX_REPEATS) { $('alarmStatus').textContent = '已完成全部响铃。';
+                $('alarmStatus').className = ''; setTimeout(() => { $('alarmStopSnackbar').classList.add('hide'); if (
+                        isRingSupported()) AndroidRing.stopRing(); }, 3000); return; }
+            alarmRepeatTimer = setTimeout(() => { alarmRepeatCount = nxt;
+                triggerAlarmPlay(rn, nxt);
+                scheduleNextRepeat(rn, nxt + 1); }, 5 * 60 * 1000);
+        }
+
+        function onAlarmTimeReached(rn) {
+            if (alarmCountdownTimer) clearInterval(alarmCountdownTimer);
+            currentAlarmTimeout = null;
+            alarmRepeatCount = 1;
+            triggerAlarmPlay(rn, 1);
+            scheduleNextRepeat(rn, 2);
+        }
+
+        function startAlarmCountdown(tt, rn) {
+            if (alarmCountdownTimer) clearInterval(alarmCountdownTimer);
+            const upd = () => {
+                const rem = tt - new Date();
+                if (rem <= 0) { clearInterval(alarmCountdownTimer);
+                    $('alarmStatus').textContent = '⏰ 闹钟响了！';
+                    $('alarmStatus').className = 'ringing-hl'; return; }
+                const ts = Math.floor(rem / 1000);
+                const h = Math.floor(ts / 3600),
+                    m = Math.floor((ts % 3600) / 60),
+                    s = ts % 60;
+                let p = [];
+                if (h) p.push(h + 'h');
+                if (m) p.push(m + 'm');
+                p.push(s + 's');
+                $('alarmStatus').textContent = '⏰ ' + p.join('') + ' | ' + (rn || '');
+                $('alarmStatus').className = 'countdown-hl';
+            };
+            upd();
+            alarmCountdownTimer = setInterval(upd, 1000);
+        }
+        function setAlarmWithRingtone() {
+    const ti = $('alarmTime'),
+    sr = $('ringtoneSelect');
+    if (!ti.value) return;
+    const m = sr.value || null;
+    if (!m && isRingSupported()) return;
+    clearAllAlarmTimers();
+    if (isAlarmRinging) stopRingtone();
+    currentRingtoneForAlarm = m;
+    const now = new Date();
+    const [h, min] = ti.value.split(':').map(Number);
+    let ad = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, min, 0, 0);
+    if (ad <= now) ad.setDate(ad.getDate() + 1);
+    const diff = ad - now;
+    if (diff < 0) return;
+    targetAlarmTime = ad;
+    currentAlarmTimeout = setTimeout(() => onAlarmTimeReached(m), diff);
+    startAlarmCountdown(ad, m);
+    saveLocalLog(`设定闹钟: ${ad.toLocaleString()} 铃声: ${m}`);
+
+    // ==== 新增：把闹钟时间+铃声传给安卓原生，让系统后台计时 ====
+    if (window.AndroidBridge) {
+        AndroidBridge.setAlarmTime(ti.value, m);
+    }
+}
+
+
+        // ==================== 日历 ====================
+        function renderCalendar() {
+            const n = new Date(),
+                y = n.getFullYear(),
+                m = n.getMonth();
+            $('calendarMonth').textContent = `${y}年${m+1}月`;
+            const fd = new Date(y, m, 1).getDay(),
+                dim = new Date(y, m + 1, 0).getDate();
+            const g = $('calendarDays');
+            g.innerHTML = '';
+            ['日', '一', '二', '三', '四', '五', '六'].forEach(d => {
+                const dv = document.createElement('div');
+                dv.className = 'cal-cell cal-header-cell';
+                dv.textContent = d;
+                g.appendChild(dv);
+            });
+            for (let i = 0; i < fd; i++) g.appendChild(document.createElement('div'));
+            for (let d = 1; d <= dim; d++) {
+                const dv = document.createElement('div');
+                dv.className = 'cal-cell';
+                dv.textContent = d;
+                if (d === n.getDate()) dv.classList.add('today');
+                g.appendChild(dv);
+            }
+        }
+
+        // ==================== 公告/节日 ====================
+        const noticeData = [{ title: '系统升级公告', time: '2026-05-01', content: '性能优化，加载速度提升40%！' },
+            { title: '多语言支持', time: '2026-05-10', content: '现已支持中英日韩阿等多语言AI翻译切换' },
+            { title: '新增纯净模式与代理模式', time: '2026-05-22',
+                content: '设置中可开启纯净模式拦截广告、代理模式使用港澳台高速节点' },
+            { title: '浏览器伪装 + 广告拦截增强', time: '2026-05-22',
+            content: '已植入浏览器指纹伪装，隐藏本地运行标识，增强广告拦截能力' }];
+
+        function loadNoticeList() {
+            const c = $('noticeList');
+            if (!c) return;
+            c.innerHTML = noticeData.map((n, i) =>
+                `<div class="notice-row" data-idx="${i}"><span class="notice-dot"></span><span class="notice-title">${n.title}</span><span class="notice-time">${n.time}</span></div>`
+            ).join('');
+            c.querySelectorAll('.notice-row').forEach(el => el.addEventListener('click', () => {
+                const n = noticeData[el.dataset.idx];
+                $('noticeDetailTitle').textContent = n.title;
+                $('noticeDetailContent').innerHTML = `<p>${n.content}</p><small>${n.time}</small>`;
+                openModal('noticeModal');
+            }));
+        }
+
+        function checkFestival() {
+            const n = new Date(),
+                m = n.getMonth() + 1,
+                d = n.getDate();
+            let f = '';
+            if (m === 1 && d === 1) f = '元旦';
+            else if (m === 5 && d === 1) f = '劳动节';
+            else if (m === 10 && d === 1) f = '国庆节';
+            $('todayFestivalShort').textContent = f || '--';
+            const b = $('festivalBox');
+            if (f) { $('festivalTitle').textContent = '✨ ' + f + ' ✨';
+                $('festivalWish').textContent = '祝您节日快乐！';
+                b.style.display = 'block'; } else b.style.display = 'none';
+        }
+
+        // ==================== 影娱（仅保留影视线路①） ====================
+        const HOT_SITES = [
+            { id: 2, name: '影视线路①', icon: '🎬', desc: '影视线路一（主推）', enabled: true, category: '短视频/直播' }
+        ];
+        let currentSelectedSite = HOT_SITES[0];
+
+        function callPlatformOpen(s) { if (!s.enabled) return; const b = window.AndroidBridge; if (b?.['go' + s.id]) { b[
+                    'go' + s.id]();
+                saveLocalLog(`打开平台: ${s.name}`); } else { alert(`模拟打开 ${s.name} (原生桥接未实现)`); } }
+
+        function openCurrentVideo() { if (currentSelectedSite.enabled) callPlatformOpen(currentSelectedSite); }
+
+        function updateVideoSelectorDisplay() {
+            $('currentVideoIcon').textContent = currentSelectedSite.icon;
+            $('currentVideoName').textContent = currentSelectedSite.name;
+            $('currentVideoDesc').textContent = currentSelectedSite.desc;
+            const t = $('videoToggle');
+            t.style.opacity = currentSelectedSite.enabled ? '1' : '0.4';
+            t.style.pointerEvents = currentSelectedSite.enabled ? 'auto' : 'none';
+            t.classList.remove('on');
+        }
+
+        function renderVideoDropdown() {
+            const d = $('videoDropdown');
+            if (!d) return;
+            d.innerHTML = '';
+            let lc = '';
+            HOT_SITES.forEach(s => {
+                if (s.category !== lc) { lc = s.category;
+                    d.innerHTML += `<div class="video-cat">${s.category}</div>`; }
+                const cls = s.enabled ? '' : ' disabled';
+                let tag = '';
+                if (!s.enabled) { tag = `<span class="video-tag off">需代理</span>`; } else if (s.id === 2) { tag =
+                        `<span class="video-tag recommend">🔥主推</span>`; }
+                d.innerHTML +=
+                    `<div class="video-drop-item${cls}" data-id="${s.id}"><span>${s.icon}</span><span style="flex:1;">${s.name}</span>${tag}</div>`;
+            });
+            d.querySelectorAll('.video-drop-item:not(.disabled)').forEach(it => it.addEventListener('click', () => {
+                const s = HOT_SITES.find(x => x.id === parseInt(it.dataset.id));
+                if (s) { currentSelectedSite = s;
+                    updateVideoSelectorDisplay();
+                    d.classList.remove('show'); }
+            }));
+        }
+
+        function initVideoSelector() {
+            updateVideoSelectorDisplay();
+            renderVideoDropdown();
+            $('videoPicker').addEventListener('click', e => { e.stopPropagation();
+                $('videoDropdown').classList.toggle('show'); });
+            $('videoToggle').addEventListener('click', e => { e.stopPropagation();
+                openCurrentVideo(); });
+            document.addEventListener('click', e => {
+                const dd = $('videoDropdown');
+                if (dd?.classList.contains('show') && !dd.contains(e.target) && e.target !== $('videoPicker') && !$(
+                        'videoPicker').contains(e.target)) dd.classList.remove('show');
+            });
+        }
+
+        // ==================== 音乐（仅保留音乐线路①，无链接） ====================
+        const MUSIC_SITES = [
+            { id: 201, name: '音乐线路①', icon: '🎧', desc: '线路一：免费在线听歌（主推）', enabled: true, category: '在线音乐', tag: '🔥主推' }
+        ];
+        let currentSelectedMusic = MUSIC_SITES[0];
+
+        function openMusic(music) {
+            if (!music.enabled) return;
+            const bridge = window.AndroidBridge;
+            const methodName = 'go' + music.id;
+            if (bridge && typeof bridge[methodName] === 'function') {
+                bridge[methodName]();
+                saveLocalLog(`打开音乐平台: ${music.name}`);
+            } else {
+                alert(`未找到原生桥接方法: ${methodName}`);
+            }
+        }
+
+        function openCurrentMusic() { if (currentSelectedMusic.enabled) openMusic(currentSelectedMusic); }
+
+        function updateMusicSelectorDisplay() {
+            if (!$('currentMusicIcon')) return;
+            $('currentMusicIcon').textContent = currentSelectedMusic.icon;
+            $('currentMusicName').textContent = currentSelectedMusic.name;
+            $('currentMusicDesc').textContent = currentSelectedMusic.desc;
+            const t = $('musicToggle');
+            if (t) {
+                t.style.opacity = currentSelectedMusic.enabled ? '1' : '0.4';
+                t.style.pointerEvents = currentSelectedMusic.enabled ? 'auto' : 'none';
+                t.classList.remove('on');
+            }
+        }
+
+        function renderMusicDropdown() {
+            const d = $('musicDropdown');
+            if (!d) return;
+            d.innerHTML = '';
+            let lc = '';
+            MUSIC_SITES.forEach(music => {
+                if (music.category !== lc) { lc = music.category;
+                    d.innerHTML += `<div class="video-cat">${music.category}</div>`; }
+                const cls = music.enabled ? '' : ' disabled';
+                const tagClass = music.tag === '🔥主推' ? 'video-tag recommend' : 'video-tag';
+                const tag = music.tag ? `<span class="${tagClass}">${music.tag}</span>` : '';
+                d.innerHTML +=
+                    `<div class="video-drop-item${cls}" data-id="${music.id}"><span>${music.icon}</span><span style="flex:1;">${music.name}</span>${tag}<span style="font-size:9px;color:var(--text3);">↗</span></div>`;
+            });
+            d.querySelectorAll('.video-drop-item:not(.disabled)').forEach(it => it.addEventListener('click', () => {
+                const m = MUSIC_SITES.find(x => x.id === parseInt(it.dataset.id));
+                if (m) { currentSelectedMusic = m;
+                    updateMusicSelectorDisplay();
+                    d.classList.remove('show'); }
+            }));
+        }
+
+        function initMusicSelector() {
+            updateMusicSelectorDisplay();
+            renderMusicDropdown();
+            $('musicPicker')?.addEventListener('click', e => { e.stopPropagation();
+                $('musicDropdown').classList.toggle('show'); });
+            $('musicToggle')?.addEventListener('click', e => { e.stopPropagation();
+                openCurrentMusic(); });
+            document.addEventListener('click', e => {
+                const dd = $('musicDropdown');
+                if (dd?.classList.contains('show') && !dd.contains(e.target) && e.target !== $('musicPicker') && !$(
+                        'musicPicker')?.contains(e.target)) dd.classList.remove('show');
+            });
+        }
+
+        // ==================== 游戏（无链接） ====================
+        const GAME_SITES = [
+            { id: 101, name: '原神', icon: '🌊', desc: '云·原神 - 米哈游', enabled: true, category: '米哈游云游戏', tag: '米哈游' },
+            { id: 102, name: '星穹铁道', icon: '🚂', desc: '云·星穹铁道 - 米哈游', enabled: true, category: '米哈游云游戏', tag: '米哈游' },
+            { id: 103, name: '233小游戏', icon: '🎯', desc: '233乐园小游戏', enabled: true, category: '休闲小游戏', tag: '休闲' },
+            { id: 104, name: '4399小游戏', icon: '🎪', desc: '4399手机小游戏', enabled: true, category: '休闲小游戏', tag: '休闲' },
+        ];
+        let currentSelectedGame = GAME_SITES[0];
+
+        function openGame(game) {
+            if (!game.enabled) return;
+            const bridge = window.AndroidBridge;
+            const methodName = 'go' + game.id;
+            if (bridge && typeof bridge[methodName] === 'function') {
+                bridge[methodName]();
+                saveLocalLog(`打开游戏: ${game.name}`);
+            } else {
+                alert(`未找到原生桥接方法: ${methodName}`);
+            }
+        }
+
+        function openCurrentGame() { if (currentSelectedGame.enabled) openGame(currentSelectedGame); }
+
+        function updateGameSelectorDisplay() {
+            $('currentGameIcon').textContent = currentSelectedGame.icon;
+            $('currentGameName').textContent = currentSelectedGame.name;
+            $('currentGameDesc').textContent = currentSelectedGame.desc;
+            const t = $('gameToggle');
+            t.style.opacity = currentSelectedGame.enabled ? '1' : '0.4';
+            t.style.pointerEvents = currentSelectedGame.enabled ? 'auto' : 'none';
+            t.classList.remove('on');
+        }
+
+        function renderGameDropdown() {
+            const d = $('gameDropdown');
+            if (!d) return;
+            d.innerHTML = '';
+            let lc = '';
+            GAME_SITES.forEach(game => {
+                if (game.category !== lc) { lc = game.category;
+                    d.innerHTML += `<div class="video-cat">${game.category}</div>`; }
+                const cls = game.enabled ? '' : ' disabled';
+                const tag = game.tag ? `<span class="game-category">${game.tag}</span>` : '';
+                d.innerHTML +=
+                    `<div class="video-drop-item${cls}" data-id="${game.id}"><span>${game.icon}</span><span style="flex:1;">${game.name}</span>${tag}<span style="font-size:9px;color:var(--text3);">↗</span></div>`;
+            });
+            d.querySelectorAll('.video-drop-item:not(.disabled)').forEach(it => it.addEventListener('click', () => {
+                const g = GAME_SITES.find(x => x.id === parseInt(it.dataset.id));
+                if (g) { currentSelectedGame = g;
+                    updateGameSelectorDisplay();
+                    d.classList.remove('show'); }
+            }));
+        }
+
+        function initGameSelector() {
+            updateGameSelectorDisplay();
+            renderGameDropdown();
+            $('gamePicker').addEventListener('click', e => { e.stopPropagation();
+                $('gameDropdown').classList.toggle('show'); });
+            $('gameToggle').addEventListener('click', e => { e.stopPropagation();
+                openCurrentGame(); });
+            document.addEventListener('click', e => {
+                const dd = $('gameDropdown');
+                if (dd?.classList.contains('show') && !dd.contains(e.target) && e.target !== $('gamePicker') && !$(
+                        'gamePicker').contains(e.target)) dd.classList.remove('show');
+            });
+        }
+
+        // ==================== 导航 ====================
+        function switchTab(target) {
+            document.querySelectorAll('.nav-item,.tab-page').forEach(e => e.classList.remove('active'));
+            document.querySelector(`.nav-item[data-target="${target}"]`)?.classList.add('active');
+            document.querySelector(`.tab-page[data-tab="${target}"]`)?.classList.add('active');
+            localStorage.setItem('lastTab', target);
+            if (target === 'security') updateSecurityDisplay();
+            if (target === 'game') { if (!$('gameDropdown').children.length) renderGameDropdown(); }
+            if (target !== 'tool') { const ap = $('alarmPanel');
+                const cp = $('calendarPanel'); if (ap) ap.style.display = 'none'; if (cp) cp.style.display = 'none'; }
+        }
+
+        function updateSecurityDisplay() {
+            const days = Math.max(1, Math.floor((Date.now() - parseInt(localStorage.getItem('firstVisitStamp') || Date
+                .now())) / 86400000) + 1);
+            const fpEl = $('secDeviceFingerprint');
+            if (fpEl) fpEl.textContent = localStorage.getItem('currentDeviceId') || 'DEV-' + Math.random().toString(36)
+                .substring(2, 8).toUpperCase();
+            const udEl = $('secUseDays');
+            if (udEl) udEl.textContent = days + '天';
+            const vcEl = $('secVisitCount');
+            if (vcEl) vcEl.textContent = localStorage.getItem('visitCount') || '0';
+            fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => { const ipEl = $('secPublicIP'); if (
+                    ipEl) ipEl.textContent = d.ip; }).catch(() => { const ipEl = $('secPublicIP'); if (ipEl) ipEl
+                .textContent = '--'; });
+        }
+
+        // ==================== 时间/统计 ====================
+        function updateTime() { const ct = $('currentTime'); if (ct) ct.textContent = new Date().toLocaleTimeString('zh-CN',
+                { hour12: false }); }
+
+        function updateOnlineTime() {
+            const s = parseInt(localStorage.getItem('sessionStartStamp') || Date.now());
+            const diff = Math.floor((Date.now() - s) / 1000);
+            const ot = $('onlineTime');
+            if (ot) ot.textContent = [String(Math.floor(diff / 3600)).padStart(2, '0'), String(Math.floor((diff % 3600) /
+                60)).padStart(2, '0'), String(diff % 60).padStart(2, '0')].join(':');
+        }
+
+        function updateUseDays() {
+            const d = Math.max(1, Math.floor((Date.now() - parseInt(localStorage.getItem('firstVisitStamp') || Date
+            .now())) / 86400000) + 1);
+            const ud = $('useDays');
+            if (ud) ud.textContent = d + '天';
+        }
+
+        // ==================== 初始化 ====================
+        function init() {
+            if (!localStorage.getItem('firstVisitStamp')) localStorage.setItem('firstVisitStamp', Date.now());
+            if (!localStorage.getItem('sessionStartStamp')) localStorage.setItem('sessionStartStamp', Date.now());
+            if (!localStorage.getItem('appLang')) localStorage.setItem('appLang', 'auto');
+            if (!localStorage.getItem('currentDeviceId')) localStorage.setItem('currentDeviceId', 'DEV-' + Math.random()
+                .toString(36).substring(2, 8).toUpperCase());
+            const count = (parseInt(localStorage.getItem('visitCount') || '0') + 1);
+            localStorage.setItem('visitCount', count);
+            const vcEl = $('visitCount');
+            if (vcEl) vcEl.textContent = count;
+
+            applyTheme();
+            updateThemeUI();
+            document.querySelectorAll('#themeModeSelector .mode-chip').forEach(c => c.addEventListener('click', () => setTheme(
+                c.dataset.theme)));
+            $('themeBtn').addEventListener('click', () => { const m = ['light', 'dark', 'auto'];
+                setTheme(m[(m.indexOf(getTheme()) + 1) % 3]); });
+            matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (getTheme() === 'auto')
+                    applyTheme(); });
+
+            applyColorTheme();
+            document.querySelectorAll('.color-theme-dot').forEach(d => d.addEventListener('click', () => { localStorage
+                    .setItem('colorTheme', d.dataset.color);
+                applyColorTheme(); }));
+
+            applyEyeCareMode();
+            updateEyeCareUI();
+            $('eyeCareToggleRow').addEventListener('click', toggleEyeCareQuick);
+            $('eyeCareTrack').addEventListener('click', e => { e.stopPropagation();
+                toggleEyeCareQuick(); });
+            document.querySelectorAll('#eyeCareModeSelector .mode-chip').forEach(c => c.addEventListener('click', e => { e
+                .stopPropagation();
+                setEyeCareMode(c.dataset.mode); }));
+            setInterval(() => { if (getEyeCareMode() === 'auto') applyEyeCareMode(); }, 300000);
+
+            // 纯净模式初始化
+            pureModeEnabled = localStorage.getItem('pureMode') === 'true';
+            updatePureModeUI();
+            const pmRow = $('pureModeToggleRow');
+            if (pmRow) pmRow.addEventListener('click', () => setPureMode(!pureModeEnabled));
+            const pmTrack = $('pureModeTrack');
+            if (pmTrack) pmTrack.addEventListener('click', (e) => { e.stopPropagation();
+                setPureMode(!pureModeEnabled); });
+            installAdInterceptor();
+            // 初始状态同步广告观察器
+            if (pureModeEnabled && window.__adBlockObserver) {
+                window.__adBlockObserver.start();
+            } else if (!pureModeEnabled && window.__adBlockObserver) {
+                window.__adBlockObserver.stop();
+            }
+
+            // 代理模式初始化
+            proxyEnabled = localStorage.getItem('proxyMode') === 'true';
+            proxyRegion = localStorage.getItem('proxyRegion') || 'hk';
+            updateProxyUI();
+            const proxyRow = $('proxyModeToggleRow');
+            if (proxyRow) proxyRow.addEventListener('click', () => setProxyMode(!proxyEnabled));
+            const proxyTrack = $('proxyModeTrack');
+            if (proxyTrack) proxyTrack.addEventListener('click', (e) => { e.stopPropagation();
+                setProxyMode(!proxyEnabled); });
+            const proxySelect = $('proxyRegionSelect');
+            if (proxySelect) proxySelect.addEventListener('change', (e) => setProxyRegion(e.target.value));
+            const testBtn = $('testProxyBtn');
+            if (testBtn) testBtn.addEventListener('click', testProxySpeed);
+
+            collectSourceTexts();
+            populateLangMenu();
+            updateLangUI();
+            const cl = getLang();
+            if (cl !== 'zh-CN') { translateVersion++;
+                applyAITranslations(cl, translateVersion); }
+            document.body.classList.toggle('rtl', cl === 'ar');
+
+            loadRingtoneList();
+            const previewBtn = $('previewRingBtn');
+            if (previewBtn) previewBtn.onclick = previewRingtone;
+            const stopBtn = $('stopRingBtn');
+            if (stopBtn) stopBtn.onclick = stopRingtone;
+            const setAlarmBtn = $('setAlarmBtn');
+            if (setAlarmBtn) setAlarmBtn.onclick = setAlarmWithRingtone;
+            const forceStopBtn = $('forceStopAlarmBtn');
+            if (forceStopBtn) forceStopBtn.onclick = stopAlarmAndClear;
+
+            document.querySelectorAll('.func-btn[data-action]').forEach(btn => btn.addEventListener('click', () => {
+                const a = btn.dataset.action;
+                if (a === 'info') {
+                    const infoEl = $('infoDetails');
+                    if (infoEl) infoEl.innerHTML =
+                        `设备指纹: ${localStorage.getItem('currentDeviceId')}<br>已使用: ${$('useDays')?.textContent||'--'}<br>浏览器伪装: ✅ 已激活<br>广告拦截: ${pureModeEnabled?'✅ 启用':'❌ 停用'}<br>版本: v10.0`;
+                    openModal('infoModal');
+                } else if (a === 'eyecare') toggleEyeCareQuick();
+                else if (a === 'clear') openModal('clearModal');
+                else if (a === 'log') { const logEl = $('logText'); if (logEl) logEl.value = localStorage.getItem(
+                        'localSystemLog') || '';
+                    openModal('logModal'); } else if (a === 'about') alert(
+                    '智能云桥 v10.0\n✅ 浏览器指纹伪装 · 隐藏本地运行标识\n✅ 增强广告拦截 (域名+DOM+弹窗)\n🎬 影视线路① · 🎵 音乐线路① · 🎮 游戏4款\n⏰ 闹钟 · 📅 日历\n🧹 纯净模式 · 🌏 港澳台代理模式');
+                else if (a === 'calendar') { switchTab('tool'); const cp = $('calendarPanel'); const ap = $(
+                        'alarmPanel'); if (cp) cp.style.display = 'block'; if (ap) ap.style.display =
+                    'none';
+                    renderCalendar(); } else if (a === 'alarm') { switchTab('tool'); const ap = $('alarmPanel');
+                    const cp = $('calendarPanel'); if (ap) ap.style.display = 'block'; if (cp) cp.style
+                        .display = 'none'; } else if (a === 'videoTab') switchTab('video');
+            }));
+
+            document.querySelectorAll('.nav-item').forEach(i => i.addEventListener('click', () => switchTab(i.dataset
+                .target)));
+            initVideoSelector();
+            initMusicSelector();
+            initGameSelector();
+            const secViewLogBtn = $('secViewLogBtn');
+            if (secViewLogBtn) secViewLogBtn.onclick = () => { const logEl = $('logText'); if (logEl) logEl.value =
+                    localStorage.getItem('localSystemLog') || '';
+                openModal('logModal'); };
+            const secExportBtn = $('secExportLogBtn');
+            if (secExportBtn) secExportBtn.onclick = exportAllLog;
+            const secClearBtn = $('secClearCacheBtn');
+            if (secClearBtn) secClearBtn.onclick = () => openModal('clearModal');
+            const secResetBtn = $('secResetAllBtn');
+            if (secResetBtn) secResetBtn.onclick = () => { if (confirm('确定重置所有设置？此操作不可恢复。')) { localStorage.clear();
+                    sessionStorage.clear();
+                    location.reload(); } };
+            const secDeviceBtn = $('secDeviceInfo');
+            if (secDeviceBtn) secDeviceBtn.onclick = () => { const infoEl = $('infoDetails'); if (infoEl) infoEl.innerHTML =
+                    `设备指纹: ${localStorage.getItem('currentDeviceId')}<br>已使用: ${$('secUseDays')?.textContent||'--'}<br>IP: ${$('secPublicIP')?.textContent||'--'}<br>浏览器伪装: ✅ 已激活<br>版本: v10.0`;
+                openModal('infoModal'); };
+
+            loadNoticeList();
+            checkFestival();
+            fetchWeather();
+            updateTime();
+            updateOnlineTime();
+            updateUseDays();
+            setInterval(updateTime, 1000);
+            setInterval(updateOnlineTime, 1000);
+            // 每10分钟自动刷新天气（提高准确性）
+            setInterval(fetchWeather, 600000);
+            switchTab(localStorage.getItem('lastTab') || 'home');
+            updateSecurityDisplay();
+
+            // 天气组件交互
+            const weatherWidget = $('weatherWidget');
+            if (weatherWidget) {
+                weatherWidget.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    fetchWeather().then(() => {
+                        if (weatherDataCache) showWeatherTooltip(e);
+                    });
+                });
+                weatherWidget.addEventListener('mouseenter', showWeatherTooltip);
+                weatherWidget.addEventListener('mouseleave', hideWeatherTooltip);
+                weatherWidget.addEventListener('touchstart', showWeatherTooltip, { passive: true });
+                weatherWidget.addEventListener('touchend', () => setTimeout(hideWeatherTooltip, 2500));
+            }
+            document.addEventListener('click', (e) => {
+                if (weatherWidget && !weatherWidget.contains(e.target)) hideWeatherTooltip();
+            });
+
+            saveLocalLog('智能云桥 v10.0 启动完成 · 浏览器伪装✅ · 广告拦截增强✅ · IP天气定位✅');
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
